@@ -1,0 +1,69 @@
+version: "3.7"
+
+#networks:
+#  app-tier:
+#    driver: bridge
+
+services:
+  rabbitmq-broker:
+    image: "rabbitmq"
+    ports:
+      - "5672:5672"
+
+  rabbitmq-management:
+    image: ""
+#  register:
+#    build:
+#      context: ./services/register
+#      dockerfile: Dockerfile
+#    volumes:
+#      - './services/register:/usr/src/ml-framework'
+#    ports:
+#      - 5000:5000
+#    environment:
+#      - FLASK_ENV=development
+#      - APP_SETTINGS=project.config.DevelopmentConfig
+#      - DATABASE_URL=postgres://postgres:postgres@users-db:5432/users_dev
+#      - DATABASE_TEST_URL=postgres://postgres:postgres@users-db:5432/users_test
+#      - RABBITMQ_USERNAME=user
+#      - RABBITMQ_PASSWORD=bitnami
+#    depends_on:
+#      - users-db
+#      - rabbitmq-broker
+
+  rabbitmq-consumer:
+    build:
+      context: ./services/simple-consumer
+      dockerfile: Dockerfile
+    environment:
+#      - RABBITMQ_USERNAME=guest
+#      - RABBITMQ_PASSWORD=guest
+      - QUEUE=register-service-queue
+      - BROKER=rabbitmq-broker
+      - PORT=5672
+      - EXCHANGE=requests
+    depends_on:
+      - rabbitmq-broker
+
+  rabbitmq-producer:
+    build:
+      context: ./services/simple-producer
+      dockerfile: Dockerfile
+    environment:
+#      - RABBITMQ_USERNAME=guest
+#      - RABBITMQ_PASSWORD=guest
+      - BROKER=rabbitmq-broker
+      - EXCHANGE=requests
+      - PORT=5672
+    depends_on:
+      - rabbitmq-broker
+
+#  users-db:
+#    build:
+#      context: ./services/register/project/db
+#      dockerfile: Dockerfile
+#    ports:
+#      - 5432:5432
+#    environment:
+#      - POSTGRES_USER=postgres
+#      - POSTGRES_PASSWORD=postgres

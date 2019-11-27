@@ -9,32 +9,73 @@ services:
     image: "rabbitmq"
     ports:
       - "5672:5672"
+      - "15672:15672"
 
-  rabbitmq-management:
-    image: ""
-#  register:
-#    build:
-#      context: ./services/register
-#      dockerfile: Dockerfile
-#    volumes:
-#      - './services/register:/usr/src/ml-framework'
-#    ports:
-#      - 5000:5000
-#    environment:
-#      - FLASK_ENV=development
-#      - APP_SETTINGS=project.config.DevelopmentConfig
-#      - DATABASE_URL=postgres://postgres:postgres@users-db:5432/users_dev
-#      - DATABASE_TEST_URL=postgres://postgres:postgres@users-db:5432/users_test
-#      - RABBITMQ_USERNAME=user
-#      - RABBITMQ_PASSWORD=bitnami
-#    depends_on:
-#      - users-db
-#      - rabbitmq-broker
+  register:
+    image: "alpt96/mltestingwebframework:register"
+    volumes:
+      - './services/register:/usr/src/ml-framework'
+    ports:
+      - 5000:5000
+    environment:
+      - FLASK_ENV=development
+      - APP_SETTINGS=project.config.DevelopmentConfig
+      - DATABASE_URL=postgres://postgres:postgres@users-db:5432/users_dev
+      - DATABASE_TEST_URL=postgres://postgres:postgres@users-db:5432/users_test
+      - RABBITMQ_USERNAME=user
+      - RABBITMQ_PASSWORD=bitnami
+    depends_on:
+      - users-db
+      - rabbitmq-broker
 
-  rabbitmq-consumer:
+  login:
+    image: "alpt96/mltestingwebframework:login"
+    volumes:
+      - './services/register:/usr/src/ml-framework'
+    ports:
+      - 5001:5001
+    environment:
+      - FLASK_ENV=development
+      - APP_SETTINGS=project.config.DevelopmentConfig
+      - DATABASE_URL=postgres://postgres:postgres@users-db:5432/users_dev
+      - DATABASE_TEST_URL=postgres://postgres:postgres@users-db:5432/users_test
+      - RABBITMQ_USERNAME=user
+      - RABBITMQ_PASSWORD=bitnami
+    depends_on:
+      - users-db
+      - rabbitmq-broker
+
+  views:
+    image: "alpt96/mltestingwebframework:views"
+    volumes:
+      - './services/register:/usr/src/ml-framework'
+    ports:
+      - 5002:5002
+    environment:
+      - FLASK_ENV=development
+      - APP_SETTINGS=project.config.DevelopmentConfig
+      - DATABASE_URL=postgres://postgres:postgres@users-db:5432/users_dev
+      - DATABASE_TEST_URL=postgres://postgres:postgres@users-db:5432/users_test
+      - RABBITMQ_USERNAME=user
+      - RABBITMQ_PASSWORD=bitnami
+    depends_on:
+      - login
+      - register
+
+
+  users-db:
     build:
-      context: ./services/simple-consumer
+      context: ./services/register/project/db
       dockerfile: Dockerfile
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+
+
+ rabbitmq-consumer:
+    image: "alpt96/mltestingwebframework:simple-consumer"
     environment:
 #      - RABBITMQ_USERNAME=guest
 #      - RABBITMQ_PASSWORD=guest
@@ -46,9 +87,7 @@ services:
       - rabbitmq-broker
 
   rabbitmq-producer:
-    build:
-      context: ./services/simple-producer
-      dockerfile: Dockerfile
+    image: "alpt96/mltestingwebframework:simple-producer"
     environment:
 #      - RABBITMQ_USERNAME=guest
 #      - RABBITMQ_PASSWORD=guest
@@ -57,13 +96,3 @@ services:
       - PORT=5672
     depends_on:
       - rabbitmq-broker
-
-#  users-db:
-#    build:
-#      context: ./services/register/project/db
-#      dockerfile: Dockerfile
-#    ports:
-#      - 5432:5432
-#    environment:
-#      - POSTGRES_USER=postgres
-#      - POSTGRES_PASSWORD=postgres

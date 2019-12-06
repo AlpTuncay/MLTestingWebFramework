@@ -19,3 +19,8 @@ def login():
 def logout():
     # User's database entry will be destroyed
     pass
+
+
+@login_blueprint.route("/verify/<token>/<user_id>", methods=["GET"])
+def verify_token(token, user_id):
+    pass

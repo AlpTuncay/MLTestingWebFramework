@@ -59,6 +59,7 @@ services:
       - RABBITMQ_USERNAME=user
       - RABBITMQ_PASSWORD=bitnami
     depends_on:
+      - rabbitmq-broker
 
   users-db:
     build:

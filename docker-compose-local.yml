@@ -8,7 +8,9 @@ services:
       - "15672:15672"
 
   register:
-    image: "alpt96/mltestingwebframework:register"
+    build:
+      context: ./services/register
+      dockerfile: Dockerfile
     volumes:
       - './services/register:/usr/src/ml-framework'
     ports:
@@ -25,11 +27,13 @@ services:
       - rabbitmq-broker
 
   login:
-    image: "alpt96/mltestingwebframework:login"
+    build:
+      context: ./services/login
+      dockerfile: Dockerfile
     volumes:
       - './services/register:/usr/src/ml-framework'
     ports:
-      - "5001:5001"
+      - "5001:5000"
     environment:
       - FLASK_ENV=development
       - APP_SETTINGS=project.config.DevelopmentConfig
@@ -42,11 +46,13 @@ services:
       - rabbitmq-broker
 
   views:
-    image: "alpt96/mltestingwebframework:views"
+    build:
+      context: ./services/views
+      dockerfile: Dockerfile
     volumes:
-      - './services/register:/usr/src/ml-framework'
+      - './services/views:/usr/src/ml-framework'
     ports:
-      - "5002:5002"
+      - "5002:5000"
     environment:
       - FLASK_ENV=development
       - APP_SETTINGS=project.config.DevelopmentConfig
@@ -66,27 +72,3 @@ services:
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
-
-
-  rabbitmq-consumer:
-    image: "alpt96/mltestingwebframework:simple-consumer"
-    environment:
-  #      - RABBITMQ_USERNAME=guest
-  #      - RABBITMQ_PASSWORD=guest
-      - QUEUE=register-service-queue
-      - BROKER=rabbitmq-broker
-      - PORT=5672
-      - EXCHANGE=requests
-    depends_on:
-      - rabbitmq-broker
-
-  rabbitmq-producer:
-    image: "alpt96/mltestingwebframework:simple-producer"
-    environment:
-  #      - RABBITMQ_USERNAME=guest
-  #      - RABBITMQ_PASSWORD=guest
-      - BROKER=rabbitmq-broker
-      - EXCHANGE=requests
-      - PORT=5672
-    depends_on:
-      - rabbitmq-broker

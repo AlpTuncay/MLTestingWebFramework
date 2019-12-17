@@ -13,7 +13,7 @@ class Producer:
         # self.channel = self.connection.channel()
         # self.channel.queue_declare("register-service-queue")
 
-    def produce_msg(self, msg):
+    def produce_msg(self, msg, exchange, routing_key):
         connection = pika.BlockingConnection(pika.ConnectionParameters(host=self.host, credentials=self.credentials))
         channel = connection.channel()
-        channel.basic_publish(body=msg, exchange="requests", routing_key="service.register")
+        channel.basic_publish(body=msg, exchange=exchange, routing_key=routing_key)

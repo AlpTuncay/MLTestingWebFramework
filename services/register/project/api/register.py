@@ -28,21 +28,28 @@ def register_user():
             database.session.add(user)
             database.session.commit()
 
-            return jsonify({
+            status = {
                 "status": 201,
                 "message": "User registered successfully."
-            })
+            }
+
+            return jsonify(status)
         else:
-            return jsonify({
+            status = {
                 "status": 400,
                 "message": "User already exists."
-            })
+            }
+
+            return jsonify(status)
     except exc.IntegrityError:
         database.session.rollback()
-        return jsonify({
+
+        status = {
             "status": 500,
             "message": "Error ocurred while registering"
-        })
+        }
+
+        return jsonify(status)
 
 
 @user_blueprint.route("/users/all", methods=["GET"])
@@ -54,8 +61,6 @@ def get_all_users():
             "status": 404,
             "message": "Cannot fetch users."
         }
-
-        producer.produce_msg(json.dumps(status))
 
         return jsonify(status)
     else:

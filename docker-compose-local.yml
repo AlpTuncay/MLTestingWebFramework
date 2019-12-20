@@ -1,11 +1,11 @@
 version: "3.7"
 
 services:
-  rabbitmq-broker:
-    image: "rabbitmq"
-    ports:
-      - "5672:5672"
-      - "15672:15672"
+#  rabbitmq-broker:
+#    image: "rabbitmq"
+#    ports:
+#      - "5672:5672"
+#      - "15672:15672"
 
   register:
     build:
@@ -24,14 +24,13 @@ services:
       - RABBITMQ_PASSWORD=guest
     depends_on:
       - users-db
-      - rabbitmq-broker
 
   login:
     build:
       context: ./services/login
       dockerfile: Dockerfile
     volumes:
-      - './services/register:/usr/src/ml-framework'
+      - './services/login:/usr/src/ml-framework'
     ports:
       - "5001:5000"
     environment:
@@ -43,7 +42,7 @@ services:
       - RABBITMQ_PASSWORD=guest
     depends_on:
       - users-db
-      - rabbitmq-broker
+      - register
 
   views:
     build:
@@ -56,12 +55,11 @@ services:
     environment:
       - FLASK_ENV=development
       - APP_SETTINGS=project.config.DevelopmentConfig
-  #      - DATABASE_URL=postgres://postgres:postgres@users-db:5432/users_dev
-  #      - DATABASE_TEST_URL=postgres://postgres:postgres@users-db:5432/users_test
       - RABBITMQ_USERNAME=guest
       - RABBITMQ_PASSWORD=guest
     depends_on:
-      - rabbitmq-broker
+      - register
+      - login
 
   users-db:
     build:

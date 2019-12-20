@@ -22,4 +22,4 @@ RUN chmod +x /usr/src/ml-framework/entrypoint.sh
 COPY . /usr/src/ml-framework
 
 # run server
-ENTRYPOINT ["sh", "/usr/src/ml-framework/entrypoint.sh"]
+CMD ["sh", "/usr/src/ml-framework/entrypoint.sh"]

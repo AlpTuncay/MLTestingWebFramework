@@ -1,28 +1,30 @@
 from sqlalchemy.sql import func
 from project import database
-from flask_login import UserMixin
+from flask import current_app
+import datetime
+import jwt
+
+#
+# class Login(database.Model):
+#     __tablename__ = "logged_in"
+#
+#     id = database.Column(database.Integer, primary_key=True, autoincrement=True)
+#     user_id = database.Column(database.Integer, nullable=False)
+#     auth_token = database.Column(database.String(512), nullable=False)
+#
+#     def __init__(self, user_id, auth_token):
+#         self.user_id = user_id
+#         self.auth_token = auth_token
+#
+#     def to_json(self):
+#         return {
+#             "id": self.id,
+#             "user_id": self.user_id,
+#             "auth_token": self.auth_token
+#         }
 
 
-class Login(database.Model):
-    __tablename__ = "logged_in"
-
-    id = database.Column(database.Integer, primary_key=True, autoincrement=True)
-    user_id = database.Column(database.Integer, nullable=False)
-    auth_token = database.Column(database.String(512), nullable=False)
-
-    def __init__(self, user_id, auth_token):
-        self.user_id = user_id
-        self.auth_token = auth_token
-
-    def to_json(self):
-        return {
-            "id": self.id,
-            "user_id": self.user_id,
-            "auth_token": self.auth_token
-        }
-
-
-class User(UserMixin, database.Model):
+class User(database.Model):
 
         __tablename__ = "users"
 
@@ -49,3 +51,30 @@ class User(UserMixin, database.Model):
                 "surname": self.surname,
                 "created_at": self.created_at
             }
+
+        def encode_auth_token(self, user_id):
+            try:
+                current_app.logger.debug(f"TOKEN_EXP_DAYS: {current_app.config.get('TOKEN_EXP_DAYS')}")
+                payload = {
+                    "exp": datetime.datetime.utcnow() + datetime.timedelta(days=current_app.config.get("TOKEN_EXP_DAYS")),
+                    "iat": datetime.datetime.utcnow(),
+                    "sub": user_id
+                }
+                token = jwt.encode(payload, current_app.config.get("SECRET"))
+
+                current_app.logger.debug(f"TOKEN: {token}")
+
+                return token
+
+            except Exception as e:
+                current_app.logger.error(e)
+                return e
+
+        def decode_auth_token(self, token):
+            try:
+                payload = jwt.decode(token, current_app.config.get("SECRET"))
+                return payload["sub"]
+            except jwt.ExpiredSignatureError:
+                return "Signature expired."
+            except jwt.InvalidSignatureError:
+                return "Invalid token."

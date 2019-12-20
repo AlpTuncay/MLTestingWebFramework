@@ -60,7 +60,7 @@ class User(database.Model):
                     "iat": datetime.datetime.utcnow(),
                     "sub": user_id
                 }
-                token = jwt.encode(payload, current_app.config.get("SECRET"))
+                token = jwt.encode(payload, current_app.config.get("SECRET_KEY"))
 
                 current_app.logger.debug(f"TOKEN: {token}")
 

@@ -44,12 +44,12 @@ services:
       - users-db
       - register
 
-  views:
+  api:
     build:
-      context: ./services/views
+      context: services/api
       dockerfile: Dockerfile
     volumes:
-      - './services/views:/usr/src/ml-framework'
+      - './services/api:/usr/src/ml-framework'
     ports:
       - "5002:5000"
     environment:
@@ -60,6 +60,20 @@ services:
     depends_on:
       - register
       - login
+
+  views:
+    build:
+      context: services/views
+      dockerfile: Dockerfile
+    volumes:
+      - './services/views:/usr/src/app'
+      - '/usr/src/app/node_modules'
+    ports:
+      - "3001:3000"
+    environment:
+      - NODE_ENV=development
+    depends_on:
+      - api
 
   users-db:
     build:

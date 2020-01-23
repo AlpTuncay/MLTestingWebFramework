@@ -2,14 +2,9 @@ from flask import Blueprint, jsonify, request
 from project import database
 from sqlalchemy import exc
 from project.api.models import User
-import json
 
 user_blueprint = Blueprint("users", __name__)
 
-
-'''
-In each endpoint, the response returned would be sent to the RabbitMQ queue for the request sender.
-'''
 
 @user_blueprint.route("/users", methods=["POST"])
 def register_user():
@@ -32,23 +27,23 @@ def register_user():
                 "message": "User registered successfully."
             }
 
-            return jsonify(status)
+            return jsonify(status), 201
         else:
             status = {
                 "status": 400,
                 "message": "User already exists."
             }
 
-            return jsonify(status)
+            return jsonify(status), 400
     except exc.IntegrityError:
         database.session.rollback()
 
         status = {
             "status": 500,
-            "message": "Error ocurred while registering"
+            "message": "Error occurred while registering"
         }
 
-        return jsonify(status)
+        return jsonify(status), 500
 
 
 @user_blueprint.route("/users/all", methods=["GET"])
@@ -61,13 +56,13 @@ def get_all_users():
             "message": "Cannot fetch users."
         }
 
-        return jsonify(status)
+        return jsonify(status), 404
     else:
         return jsonify({
             "status": 200,
             "message": "Successfully fetched users",
             "data": [user.to_json() for user in users]
-        })
+        }), 200
 
 
 @user_blueprint.route("/users/<user_id>", methods=["GET"])
@@ -78,13 +73,13 @@ def get_one_user(user_id):
         return jsonify({
             "status": 404,
             "message": "Cannot find user."
-        })
+        }), 404
     else:
         return jsonify({
             "status": 200,
             "message": "Fetched user successfully.",
             "data": user.to_json()
-        })
+        }), 200
 
 
 @user_blueprint.route("/users/update/<user_id>", methods=["POST"])

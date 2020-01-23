@@ -22,7 +22,7 @@ def login():
     }
 
     if not email or not password:
-        return jsonify(response)
+        return jsonify(response), 400
 
     try:
         user = User.query.filter_by(email=email).first()
@@ -30,29 +30,26 @@ def login():
         if user and check_password_hash(user.password, password):
             auth_token = user.encode_auth_token(user.id)
             if auth_token:
-                response["status"] = 201
+                response["status"] = 200
                 response["message"] = "Successfully logged in"
                 response["token"] = auth_token.decode()
 
-                return jsonify(response)
+                return jsonify(response), 200
             else:
-                return jsonify(response)
+                return jsonify(response), 400
         else:
             response["status"] = 404
-            response["message"] = "User does not exist"
+            response["message"] = "Check email/password"
+
+            return jsonify(response), 404
     except Exception as e:
         response["status"] = 500
         response["message"] = f"Error while logging in. {e}"
 
-        return jsonify(response)
+        return jsonify(response), 500
 
 
 @login_blueprint.route("/logout", methods=["POST"])
 def logout():
     # User's database entry will be destroyed
     pass
-
-
-@login_blueprint.route("/hi", methods=["GET"])
-def hi():
-    return jsonify({"message": "Hi", "status": 200})

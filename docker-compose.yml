@@ -42,7 +42,7 @@ services:
       - rabbitmq-broker
 
   views:
-    image: "alpt96/mltestingwebframework:views"
+    image: "alpt96/mltestingwebframework:api"
     volumes:
       - './services/register:/usr/src/ml-framework'
     ports:

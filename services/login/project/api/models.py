@@ -4,25 +4,6 @@ from flask import current_app
 import datetime
 import jwt
 
-#
-# class Login(database.Model):
-#     __tablename__ = "logged_in"
-#
-#     id = database.Column(database.Integer, primary_key=True, autoincrement=True)
-#     user_id = database.Column(database.Integer, nullable=False)
-#     auth_token = database.Column(database.String(512), nullable=False)
-#
-#     def __init__(self, user_id, auth_token):
-#         self.user_id = user_id
-#         self.auth_token = auth_token
-#
-#     def to_json(self):
-#         return {
-#             "id": self.id,
-#             "user_id": self.user_id,
-#             "auth_token": self.auth_token
-#         }
-
 
 class User(database.Model):
 

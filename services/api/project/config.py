@@ -3,6 +3,7 @@
 class BaseConfig:
     TESTING = False
     DEBUG = False
+    SECRET_KEY = "secret"
 
 
 class DevelopmentConfig(BaseConfig):

@@ -75,12 +75,40 @@ services:
     depends_on:
       - api
 
+  models:
+    build:
+      context: services/model_deployment
+      dockerfile: Dockerfile
+    volumes:
+      - "./services/model_deployment:/usr/src/ml-framework"
+    ports:
+      - "5003:5000"
+    environment:
+      - FLASK_ENV=development
+      - APP_SETTINGS=project.config.DevelopmentConfig
+      - DATABASE_URL=postgres://postgres:postgres@models-db:5432/models_dev
+      - DATABASE_TEST_URL=postgres://postgres:postgres@models-db:5432/models_dev
+      - RABBITMQ_USERNAME=guest
+      - RABBITMQ_PASSWORD=guest
+    depends_on:
+      - models-db
+
   users-db:
     build:
       context: ./services/register/project/db
       dockerfile: Dockerfile
     ports:
       - "5432:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+
+  models-db:
+    build:
+      context: ./services/model_deployment/project/db
+      dockerfile: Dockerfile
+    ports:
+      - "5433:5432"
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres

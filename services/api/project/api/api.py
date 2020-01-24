@@ -36,7 +36,7 @@ def token_required(func):
 
                 return jsonify(response), 500
 
-        except jwt.exceptions.InvalidSignatureError as e:
+        except (jwt.exceptions.InvalidSignatureError, jwt.exceptions.ExpiredSignatureError) as e:
 
             response = {
                 "status": 401,
@@ -99,6 +99,13 @@ def user_login():
             "message": "Connection error occurred."
         }
         return jsonify(response), 500
+
+
+@views_blueprint.route("/validate", methods=["GET"])
+@cross_origin()
+@token_required
+def validate_token(current_user):
+    pass
 
 
 @views_blueprint.route("/user/profile", methods=["GET"])

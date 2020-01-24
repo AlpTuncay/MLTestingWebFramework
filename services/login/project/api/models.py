@@ -37,7 +37,7 @@ class User(database.Model):
             try:
                 current_app.logger.debug(f"TOKEN_EXP_DAYS: {current_app.config.get('TOKEN_EXP_DAYS')}")
                 payload = {
-                    "exp": datetime.datetime.utcnow() + datetime.timedelta(days=current_app.config.get("TOKEN_EXP_DAYS")),
+                    "exp": datetime.datetime.utcnow() + datetime.timedelta(minutes=current_app.config.get("TOKEN_EXP_DAYS")),
                     "iat": datetime.datetime.utcnow(),
                     "sub": user_id
                 }

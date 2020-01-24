@@ -49,6 +49,11 @@ def login():
         return jsonify(response), 500
 
 
+@login_blueprint.route("/validate", methods=["GET"])
+def validate_token():
+    pass
+
+
 @login_blueprint.route("/logout", methods=["POST"])
 def logout():
     # User's database entry will be destroyed

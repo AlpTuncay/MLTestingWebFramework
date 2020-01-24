@@ -31,10 +31,13 @@ class Login extends React.Component{
         ).then(response => {
             this.setState({
                 redirect: true,
-                url: "/profile"
+                url: "/"
             });
-            localStorage.setItem("x-access-token", response.data["token"]);
+            localStorage.setItem("x-access-token", response.data.token);
+            this.props.onSuccess();
+            console.log(response.data.token)
         }).catch(error => {
+            console.log(error);
             this.setState({
                 message: error.response.data["message"]
             })

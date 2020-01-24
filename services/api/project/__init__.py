@@ -11,7 +11,7 @@ def create_app():
 
     app_settings = os.getenv("APP_SETTINGS")
     app.config.from_object(app_settings)
-    app.config["CORS_HEADERS"] = "Content-Type"
+    app.config["CORS_HEADERS"] = "Access-Control-Allow-Origin"
 
     from project.api.api import views_blueprint
     app.register_blueprint(views_blueprint)

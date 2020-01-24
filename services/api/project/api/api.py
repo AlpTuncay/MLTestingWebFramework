@@ -8,8 +8,8 @@ from flask_cors import cross_origin
 views_blueprint = Blueprint("api", __name__)
 
 
-def token_required(f):
-    @wraps(f)
+def token_required(func):
+    @wraps(func)
     def decorated(*args, **kwargs):
         token = None
 
@@ -21,35 +21,34 @@ def token_required(f):
                 "status": 401,
                 "message": "Missing token."
             }
-            return jsonify(response)
+            return jsonify(response), 401
 
         try:
             token_decoded = jwt.decode(token, current_app.config.get("SECRET_KEY"))
             try:
                 current_user = requests.get(f"http://register:5000/users/{token_decoded['sub']}").json()
-                return f(current_user, *args, **kwargs)
+                return func(current_user, *args, **kwargs)
             except requests.exceptions.ConnectionError:
                 response = {
                     "status": 500,
                     "message": "Connection error occurred."
                 }
 
-                return jsonify(response)
+                return jsonify(response), 500
 
-        except Exception as e:
+        except jwt.exceptions.InvalidSignatureError as e:
 
             response = {
                 "status": 401,
-                "message": "Invalid token"
+                "message": f"Invalid token {e}"
             }
 
-            return jsonify(response)
-
+            return jsonify(response), 401
     return decorated
 
 
 @views_blueprint.route("/register", methods=["POST"])
-@cross_origin(origin="*", headers=["Content-Type"])
+@cross_origin()
 def register_user():
     username = request.json["data"]["username"]
     email = request.json["data"]["email"]
@@ -83,7 +82,7 @@ def register_user():
 
 
 @views_blueprint.route("/login", methods=["POST"])
-@cross_origin(origin="*", headers=["Content-Type"])
+@cross_origin()
 def user_login():
     email = request.json["data"]["email"]
     password = request.json["data"]["password"]
@@ -103,6 +102,30 @@ def user_login():
 
 
 @views_blueprint.route("/user/profile", methods=["GET"])
+@cross_origin()
 @token_required
-def profile(user):
-    return jsonify(user)
+def profile(current_user):
+    user_information = current_user["data"]
+    user_id = user_information["id"]
+
+    profile_response = {
+        "user": user_information,
+        "models": []
+    }
+
+    try:
+        r = requests.get(f"http://models:5000/user/models/{user_id}")
+        response = r.json()
+        user_deployed_models = response["data"]
+        profile_response["models"] = user_deployed_models
+    except requests.exceptions.ConnectionError as e:
+        profile_response["models"] = "Cannot connect to server right now."
+
+    return jsonify(profile_response)
+
+
+@views_blueprint.route("/model/deploy", methods=["POST"])
+@cross_origin()
+@token_required
+def deploy_model(user):
+    pass

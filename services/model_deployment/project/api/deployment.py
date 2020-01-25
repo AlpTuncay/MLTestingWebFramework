@@ -5,11 +5,17 @@ from project.api.models import ModelDefinition
 
 model_blueprint = Blueprint("models", __name__)
 
+
 @model_blueprint.route("/models", methods=["POST"])
 def deploy_model():
     model_title = request.json["data"]["model_title"]
     deployed_by = request.json["data"]["deployed_by"]
-    # File needs to be sent to the service
+    model_framework = request.json["data"]["model_framework"]
+    model_file = request.files["model_file"]
+
+    # IDEA -> First store model information, such as title, deployed_by and framework,
+    # and then create the file path for the model_file to be saved.
+    # Structure for folder path -> /users/<id>/models/<framework>/<model_id>/<model_file>
 
 
 @model_blueprint.route("/models/all", methods=["GET"])

@@ -4,6 +4,8 @@ import logging
 from functools import wraps
 import jwt
 from flask_cors import cross_origin
+import os
+from werkzeug.utils import secure_filename
 
 views_blueprint = Blueprint("api", __name__)
 
@@ -134,5 +136,34 @@ def profile(current_user):
 @views_blueprint.route("/model/deploy", methods=["POST"])
 @cross_origin()
 @token_required
-def deploy_model(user):
-    pass
+def deploy_model(current_user):
+
+    # TODO Fix file upload issue
+    model_title = request.json["data"]["model_title"]
+    model_framework = request.json["data"]["model_framework"]
+    model_file = request.json["files"]
+    filename = request.json["filename"]
+    deployed_by = current_user["data"]["id"]
+
+    # filepath = f"/users/{deployed_by}/models/{secure_filename(model_file.filename)}"
+
+    # model_file.save(filepath)
+
+    try:
+        # model_file = open(filepath)
+        r = requests.post("http://models:5000/models", json={"data": {"model_title": model_title,
+                                                                      "model_framework": model_framework,
+                                                                      "deployed_by": deployed_by}, "files": model_file, "filename": filename})
+        response = r.json()
+
+        # if response["status"] == 201:
+        #     os.remove(filepath)
+
+        return jsonify(response), response["status"]
+    except requests.exceptions.ConnectionError as e:
+        response = {
+            "status": 500,
+            "message": f"Connection error. {e}"
+        }
+
+        return jsonify(response), response["status"]

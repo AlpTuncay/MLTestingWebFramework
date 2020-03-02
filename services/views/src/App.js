@@ -79,6 +79,7 @@ class App extends React.Component {
                                 <Route path='/register' component={() => <Register/>}/> : <Route path="/model" component={() => <Model />}/>}
                             {/*{this.state.userIsLoggedIn && <Route path='/profile' component={() => <Main />}/>}*/}
                             {this.state.userIsLoggedIn && <Route path="/logout" component={() => <Logout onLogout={() => this.setState({userIsLoggedIn: false})}/>}/>}
+                            {/*<Route exact path="/model/info/:modelId" component={() => <ModelInfo />} />*/}
                         </Switch>
                     </div>
                 </Router>

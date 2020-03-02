@@ -28,6 +28,7 @@ class Main extends React.Component {
                 surname: response.data.user.surname,
                 models: response.data.models
             });
+            console.log(...this.state.models)
         }).catch(error => {
             console.log(error);
         })

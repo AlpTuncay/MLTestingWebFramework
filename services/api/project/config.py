@@ -10,6 +10,7 @@ class DevelopmentConfig(BaseConfig):
     TESTING = False
     DEBUG = True
     FLASK_ENV = "development"
+    MAX_CONTENT_LENGTH = 50 * 1024 * 1024
 
 
 class TestingConfig(BaseConfig):

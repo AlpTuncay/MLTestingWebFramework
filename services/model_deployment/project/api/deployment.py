@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, send_from_directory
 from project import database
 from sqlalchemy import exc
 from project.api.models import ModelDefinition
@@ -76,7 +76,7 @@ def get_all_models():
         response = {
             "status": 200,
             "message": "Successfully fetched models",
-            "data": [model.to_json for model in models]
+            "data": [model.to_json() for model in models]
         }
         return jsonify(response), response["status"]
 
@@ -117,3 +117,12 @@ def get_model_by_user(user_id):
             "data": [model.to_json() for model in models]
         }
         return jsonify(response), response["status"]
+
+
+@model_blueprint.route("/models/config/<model_id>", methods=["GET"])
+def send_model_config(model_id):
+    model = ModelDefinition.query.filter_by(id=model_id).first()
+
+    path = model.path_to_model
+
+    return send_from_directory(path, os.path.basename(path))

@@ -1,9 +1,36 @@
 import React from "react";
+import {Route, Link} from "react-router-dom";
+
+const axios = require("axios").default;
+
+
+// WIP => Check if fetch works. Following that, process fetched data and figure out how to
+// nicely present results on graph.
 
 class ModelObject extends React.Component {
 
   constructor(props){
     super(props);
+    this.state = {
+      model_state: []
+    }
+  }
+
+  fetchModelState = () => {
+      axios.get("http://localhost:5002/model/info/".concat(this.props.model_id.toString()),
+                {headers: {"x-access-token": window.localStorage.getItem("x-access-token")}}
+      ).then(response => {
+          this.setState({
+            model_state: response.data
+          })
+          console.log(...this.state.model_state);
+      }).catch(error => {
+          console.error(error);
+      })
+  }
+
+  componentDidMount() {
+    this.fetchModelState()
   }
 
   render() {
@@ -12,10 +39,22 @@ class ModelObject extends React.Component {
         <br />
         <div className="card">
           <div className="card-header">
-            {this.props.model_title}
+            <span className="float-left">
+              <Link to={"/model/".concat(this.props.model_id.toString())}>{this.props.model_title}</Link>
+            </span>
+            <span className="float-right">
+              {this.props.model_framework}
+            </span>
           </div>
           <div className="card-body">
-            {this.props.model_framework}
+            <div>
+              <label htmlFor="filename">Deployed Model File:</label>
+              <p id="filename">{this.props.name}</p>
+            </div>
+            <div>
+              <label htmlFor="test">Test Results:</label>
+              <p id="test">{this.model_state}</p>
+            </div>
           </div>
         </div>
       </div>

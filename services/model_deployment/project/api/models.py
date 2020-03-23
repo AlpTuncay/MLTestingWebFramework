@@ -1,5 +1,6 @@
 from sqlalchemy.sql import func
 from project import database
+import os
 
 
 class ModelDefinition(database.Model):
@@ -22,7 +23,7 @@ class ModelDefinition(database.Model):
         return {
             "id": self.id,
             "model_title": self.model_title,
-            "path": self.path_to_model,
+            "path": os.path.basename(self.path_to_model),
             "deployed_by": self.deployed_by,
             "model_framework": self.model_framework
         }

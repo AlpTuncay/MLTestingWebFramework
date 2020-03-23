@@ -4,9 +4,9 @@ import Register from "./components/Register";
 import Login from "./components/Login";
 import Home from "./components/Home";
 import Main from "./components/Main";
-import Model from "./components/Model";
 import Logout from "./components/Logout";
 import ModelDeployment from "./components/ModelDeployment";
+import ModelTest from "./components/ModelTest";
 
 import {Route, Switch, BrowserRouter as Router, Link, Redirect} from "react-router-dom";
 
@@ -22,6 +22,7 @@ class App extends React.Component {
         }
     }
 
+    // This process should be done in the backend.
     validateToken = () => {
         let userToken = "x-access-token" in localStorage ? localStorage.getItem("x-access-token") : "";
 
@@ -49,40 +50,37 @@ class App extends React.Component {
     render() {
         return (
             <div className="App">
-                <Router>
-                    <div>
-                        <nav className="navbar navbar-expand-lg navbar-light bg-light">
-                            <ul className="navbar-nav mr-auto">
-                                <li><Link to={'/'} className="nav-link">Home</Link></li>
-                                <li>
-                                    {this.state.userIsLoggedIn ? <Link to={"/model/deploy"} className="nav-link">Deploy Model</Link> : <Link to={'/login'} className="nav-link">Login</Link> }
-                                </li>
-                                <li>
-                                    {this.state.userIsLoggedIn ? <Link to={"/model"} className="nav-link">Test Model</Link> : <Link to={'/register'} className="nav-link">Register</Link>}
+                <div>
+                    <nav className="navbar navbar-expand-lg navbar-light bg-light">
+                        <ul className="navbar-nav mr-auto">
+                            <li><Link to={'/'} className="nav-link">Home</Link></li>
+                            <li>
+                                {this.state.userIsLoggedIn ? <Link to={"/model/deploy"} className="nav-link">Deploy Model</Link> : <Link to={'/login'} className="nav-link">Login</Link> }
+                            </li>
+                            <li>
+                                {!this.state.userIsLoggedIn && <Link to={'/register'} className="nav-link">Register</Link>}
 
-                                </li>
-                            </ul>
-                            <ul className="navbar-nav navbar-right">
-                                {this.state.userIsLoggedIn &&
-                                <li>
-                                    <Link to={"/logout"} className="nav-link">Logout</Link>
-                                </li>}
-                                <li className="nav-link disabled">ML Testing Framework</li>
-                            </ul>
-                        </nav>
-                        <br/>
-                        <Switch>
-                            <Route exact path='/' component={() => this.state.userIsLoggedIn ? <Main/> : <Home/>}/>
-                            {!this.state.userIsLoggedIn ?
-                                <Route path='/login' component={() => <Login onSuccess={() => this.setState({userIsLoggedIn: true})}/>}/> : <Route path="/model/deploy" component={() => <ModelDeployment/>}/>}
-                            {!this.state.userIsLoggedIn ?
-                                <Route path='/register' component={() => <Register/>}/> : <Route path="/model" component={() => <Model />}/>}
-                            {/*{this.state.userIsLoggedIn && <Route path='/profile' component={() => <Main />}/>}*/}
-                            {this.state.userIsLoggedIn && <Route path="/logout" component={() => <Logout onLogout={() => this.setState({userIsLoggedIn: false})}/>}/>}
-                            {/*<Route exact path="/model/info/:modelId" component={() => <ModelInfo />} />*/}
-                        </Switch>
-                    </div>
-                </Router>
+                            </li>
+                        </ul>
+                        <ul className="navbar-nav navbar-right">
+                            {this.state.userIsLoggedIn &&
+                            <li>
+                                <Link to={"/logout"} className="nav-link">Logout</Link>
+                            </li>}
+                            <li className="nav-link disabled">ML Testing Framework</li>
+                        </ul>
+                    </nav>
+                    <br/>
+                    <Switch>
+                        <Route exact path='/' component={() => this.state.userIsLoggedIn ? <Main/> : <Home/>}/>
+                        {!this.state.userIsLoggedIn ?
+                            <Route path='/login' component={() => <Login onSuccess={() => this.setState({userIsLoggedIn: true})}/>}/> : <Route path="/model/deploy" component={() => <ModelDeployment/>}/>}
+                        {!this.state.userIsLoggedIn &&
+                            <Route path='/register' component={() => <Register/>}/>}
+                        {this.state.userIsLoggedIn && <Route path="/logout" component={() => <Logout onLogout={() => this.setState({userIsLoggedIn: false})}/>}/>}
+                        <Route path="/model/:id" component={ModelTest}/>
+                    </Switch>
+                </div>
             </div>
         );
     }

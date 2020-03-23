@@ -93,6 +93,56 @@ services:
     depends_on:
       - models-db
 
+  model-info:
+    build:
+      context: services/model_information
+      dockerfile: Dockerfile
+    volumes:
+      - "./services/model_information:/usr/src/ml-framework"
+    ports:
+      - "5004:5000"
+    environment:
+      - FLASK_ENV=development
+      - APP_SETTINGS=project.config.DevelopmentConfig
+      - DATABASE_URL=postgres://postgres:postgres@modelstate-db:5432/modelstate_dev
+      - DATABASE_TEST_URL=postgres://postgres:postgres@modelstate-db:5432/modelstate_dev
+      - RABBITMQ_USERNAME=guest
+      - RABBITMQ_PASSWORD=guest
+    depends_on:
+      - modelstate-db
+      - models-db
+
+  ai:
+    build:
+      context: services/ai
+      dockerfile: Dockerfile_ubuntu
+    volumes:
+      - "./services/ai:/usr/src/ml-framework"
+    ports:
+      - "5005:5000"
+    environment:
+      - FLASK_ENV=development
+      - APP_SETTINGS=project.config.DevelopmentConfig
+      - DATABASE_URL=postgres://postgres:postgres@modelstate-db:5432/modelstate_dev
+      - DATABASE_TEST_URL=postgres://postgres:postgres@modelstate-db:5432/modelstate_dev
+      - RABBITMQ_USERNAME=guest
+      - RABBITMQ_PASSWORD=guest
+      - LC_ALL=en_US.utf-8
+      - LANG=en_US.utf-8
+    depends_on:
+      - modelstate-db
+
+  modelstate-db:
+    build:
+      context: ./services/model_information/project/db
+      dockerfile: Dockerfile
+    ports:
+      - "5434:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+
+
   users-db:
     build:
       context: ./services/register/project/db

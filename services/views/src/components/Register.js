@@ -11,9 +11,7 @@ class Register extends React.Component {
             email: "",
             name: "",
             surname: "",
-            password: "",
-            redirect: false,
-            message: ""
+            password: ""
         }
     }
 
@@ -39,9 +37,7 @@ class Register extends React.Component {
             })
 
         }).catch(error => {
-            this.setState({
-                message: error.response.data["message"]
-            })
+            console.log(error.response["message"])
         });
     };
 

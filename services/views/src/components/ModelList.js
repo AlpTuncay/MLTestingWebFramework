@@ -16,7 +16,7 @@ class ModelList extends React.Component {
             <br />
               {this.props.models.map((item) => (
                   <ModelObject key={item.id} model_id={item.id} model_title={item.model_title}
-                                model_framework={item.model_framework} name={item.path}>
+                                model_framework={item.model_framework} name={item.filename}>
                   </ModelObject>
               ))}
           </div>

@@ -23,7 +23,8 @@ class ModelDefinition(database.Model):
         return {
             "id": self.id,
             "model_title": self.model_title,
-            "path": os.path.basename(self.path_to_model),
+            "path": self.path_to_model,
+            "filename": os.path.basename(self.path_to_model),
             "deployed_by": self.deployed_by,
             "model_framework": self.model_framework
         }

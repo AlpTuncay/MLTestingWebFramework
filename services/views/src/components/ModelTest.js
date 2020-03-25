@@ -21,11 +21,21 @@ class ModelTest extends React.Component {
       console.log(response.data)
       this.setState({
         model_title: response.data.data.model_title,
-        path_to_model: response.data.data.path,
+        filename: response.data.data.filename,
         model_framework: response.data.data.model_framework
       })
     }).catch(error => {
       console.error(error);
+    })
+  }
+
+  sendModelTestRequest = () => {
+    axios.get(`http://localhost:5002/model/${this.props.match.params.id}/test`,
+              {headers: {"x-access-token": window.localStorage.getItem("x-access-token")}}
+    ).then(response => {
+      console.log(response)
+    }).catch(error => {
+      console.error(error)
     })
   }
 
@@ -41,14 +51,13 @@ class ModelTest extends React.Component {
           <div className="col-md-12">
               <div className="card">
                   <div className="card-body">
-                    <h4>Title: {this.state.model_title}</h4>
-                    <h4>Path: {this.state.path_to_model}</h4>
-                    <h4>Framework: {this.state.model_framework}</h4>
+                    <h4>Model to be Tested: {this.state.filename}</h4>
+                    <button onClick={this.sendModelTestRequest} className="btn btn-default btn-success">Test</button>
                   </div>
               </div>
           </div>
-          <br />
           <div className="col-md-12">
+          <br />
             <div className="card">
               <div className="card-body">
                 <h3>

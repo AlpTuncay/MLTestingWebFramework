@@ -169,7 +169,7 @@ def deploy_model(current_user):
         return jsonify(response), response["status"]
 
 
-@views_blueprint.route("/models/<model_id>")
+@views_blueprint.route("/models/<model_id>", methods=["GET"])
 @cross_origin()
 @token_required
 def fetch_model_info(current_user, model_id):
@@ -187,7 +187,7 @@ def fetch_model_info(current_user, model_id):
         return jsonify(response), response["status"]
 
 
-@views_blueprint.route("/model/info/<model_id>")
+@views_blueprint.route("/model/info/<model_id>", methods=["GET"])
 @cross_origin()
 @token_required
 def fetch_model_state(current_user, model_id):
@@ -207,11 +207,23 @@ def fetch_model_state(current_user, model_id):
         return jsonify(response), response["status"]
 
 
-@views_blueprint.route("/model/<model_id>/test")
+@views_blueprint.route("/model/<model_id>/test", methods=["GET"])
 @cross_origin()
 @token_required
-def run_model_test(model_id):
+def run_model_test(current_user, model_id):
     # Send request to AI service with model_id
     # AI service will fetch the model with the model_id, data corresponding to the model and initialize the model
     # AI service needs preprocess_data function
-    pass
+    try:
+        r = requests.get(f"http://ai:5000/test/{model_id}").json()
+
+        logging.error(r)
+
+        return jsonify(r), r["status"]
+    except requests.exceptions.ConnectionError as e:
+        response = {
+            "status": 500,
+            "message": f"Connection error. {e}"
+        }
+
+        return jsonify(response), response["status"]

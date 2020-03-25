@@ -4,8 +4,8 @@ from sqlalchemy import exc
 from project.api.models import ModelDefinition
 from werkzeug.utils import secure_filename
 import os
-from base64 import b64decode
-
+from base64 import b64encode, b64decode
+import logging
 
 model_blueprint = Blueprint("models", __name__)
 
@@ -123,6 +123,22 @@ def get_model_by_user(user_id):
 def send_model_config(model_id):
     model = ModelDefinition.query.filter_by(id=model_id).first()
 
-    path = model.path_to_model
+    if model:
+        # logging.error(model.to_json())
 
-    return send_from_directory(path, os.path.basename(path))
+        with open(model.path_to_model, "rb") as f:
+            encoded = b64encode(f.read())
+        f.close()
+        response = {
+            "config": encoded.decode(),
+            "status": 200
+        }
+
+        return jsonify(response), response["status"]
+    else:
+        response = {
+            "message": "Model not found",
+            "status": 404
+        }
+
+        return jsonify(response), response["status"]

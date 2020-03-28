@@ -207,6 +207,32 @@ def fetch_model_state(current_user, model_id):
         return jsonify(response), response["status"]
 
 
+@views_blueprint.route("/data/upload", methods=["POST"])
+@cross_origin()
+@token_required
+def upload_data(current_user):
+    data_file = request.json["data"]["data_file"]
+    model_id = request.json["data"]["model_id"]
+    filename = request.json["data"]["filename"]
+
+    try:
+        r = requests.post("http://data-provider:5000/provider/upload", json={
+                          "data": {"data_file": data_file, "model_id": model_id, "filename": filename}
+                          })
+
+        response = r.json()
+
+        return jsonify(response), response["status"]
+
+    except requests.exceptions.ConnectionError as e:
+        response = {
+            "status": 500,
+            "message": f"Connection error. {e}"
+        }
+
+        return jsonify(response), response["status"]
+
+
 @views_blueprint.route("/model/<model_id>/test", methods=["GET"])
 @cross_origin()
 @token_required
@@ -215,6 +241,9 @@ def run_model_test(current_user, model_id):
     # AI service will fetch the model with the model_id, data corresponding to the model and initialize the model
     # AI service needs preprocess_data function
     try:
+
+        # TODO -> Instead of HTTP request to AI service, publish test request on a queue  and then return proper response to the user.
+
         r = requests.get(f"http://ai:5000/test/{model_id}").json()
 
         logging.error(r)

@@ -50,7 +50,7 @@ class App extends React.Component {
     render() {
         return (
             <div className="App">
-                <div>
+                <div class="container-fluid">
                     <nav className="navbar navbar-expand-lg navbar-light bg-light">
                         <ul className="navbar-nav mr-auto">
                             <li><Link to={'/'} className="nav-link">Home</Link></li>

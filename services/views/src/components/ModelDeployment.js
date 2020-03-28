@@ -67,7 +67,7 @@ class ModelDeployment extends React.Component {
         }
 
         return (
-            <div className="row d-flex justify-content-center">
+            <div className="row">
                 <div className="col-md-12">
                     <div className="card">
                         <div className="card-body d-flex justify-content-center">

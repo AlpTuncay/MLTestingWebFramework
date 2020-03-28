@@ -112,6 +112,25 @@ services:
       - modelstate-db
       - models-db
 
+  data-provider:
+    build:
+      context: services/data_provider
+      dockerfile: Dockerfile
+    volumes:
+      - "./services/data_provider:/usr/src/ml-framework"
+    ports:
+      - "5006:5000"
+    environment:
+      - FLASK_ENV=development
+      - APP_SETTINGS=project.config.DevelopmentConfig
+      - DATABASE_URL=postgres://postgres:postgres@provider-db:5432/provider_dev
+      - DATABASE_TEST_URL=postgres://postgres:postgres@provider-db:5432/provider_dev
+      - RABBITMQ_USERNAME=guest
+      - RABBITMQ_PASSWORD=guest
+    depends_on:
+      - provider-db
+      - models-db
+
   ai:
     build:
       context: services/ai
@@ -132,17 +151,6 @@ services:
     depends_on:
       - modelstate-db
 
-  modelstate-db:
-    build:
-      context: ./services/model_information/project/db
-      dockerfile: Dockerfile
-    ports:
-      - "5434:5432"
-    environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-
-
   users-db:
     build:
       context: ./services/register/project/db
@@ -159,6 +167,26 @@ services:
       dockerfile: Dockerfile
     ports:
       - "5433:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+
+  modelstate-db:
+    build:
+      context: ./services/model_information/project/db
+      dockerfile: Dockerfile
+    ports:
+      - "5434:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+
+  provider-db:
+    build:
+      context: ./services/data_provider/project/db
+      dockerfile: Dockerfile
+    ports:
+      - "5435:5432"
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres

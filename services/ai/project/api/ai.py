@@ -13,7 +13,6 @@ ai_blueprint = Blueprint("ai", __name__)
 def run_test_for_model(model_id):
     try:
         model_definition = requests.get(f"http://models:5000/models/{model_id}").json()
-        model_config_file = requests.get(f"http://models:5000/models/config/{model_id}").json()
 
         # logging.error("Config file: " + model_config_file)
 
@@ -22,20 +21,22 @@ def run_test_for_model(model_id):
         if not os.path.exists(config_file_path):
             os.makedirs(config_file_path)
 
-        with open(config_file_path + f"/{model_definition['data']['filename']}", "wb+") as f:
-            f.write(b64decode(model_config_file["config"]))
-        f.close()
+            model_config_file = requests.get(f"http://models:5000/models/config/{model_id}").json()
+
+            with open(config_file_path + f"/{model_definition['data']['filename']}", "wb+") as f:
+                f.write(b64decode(model_config_file["config"]))
+            f.close()
 
         if model_definition["data"]["model_framework"] == "Keras":
             from keras.models import load_model
 
             # Do keras stuff here
             model = load_model(config_file_path + f"/{model_definition['data']['filename']}")
-
-            logging.error(model.summary())
+            
+            model.summary()
 
             response = {
-                "file":  model_config_file,
+                "message":  "Loaded",
                 "status": 200
             }
 

@@ -1,4 +1,6 @@
 import React from "react";
+import { Redirect } from "react-router-dom";
+import DataUpload from "./DataUpload";
 
 const axios = require("axios").default;
 
@@ -9,8 +11,9 @@ class ModelTest extends React.Component {
     this.state = {
       model_title: "",
       path_to_model: "",
-      model_framework: ""
-
+      model_framework: "",
+      redirect: false,
+      url: "/"
     }
   }
 
@@ -34,6 +37,9 @@ class ModelTest extends React.Component {
               {headers: {"x-access-token": window.localStorage.getItem("x-access-token")}}
     ).then(response => {
       console.log(response)
+      this.setState({
+        redirect: true
+      })
     }).catch(error => {
       console.error(error)
     })
@@ -44,20 +50,15 @@ class ModelTest extends React.Component {
   }
 
   render() {
+    const { redirect, url } = this.state;
 
+    if(redirect){
+        return <Redirect to={url}/>
+    }
     return (
+      <div>
         <div className="row d-flex justify-content-center">
-          <br />
           <div className="col-md-12">
-              <div className="card">
-                  <div className="card-body">
-                    <h4>Model to be Tested: {this.state.filename}</h4>
-                    <button onClick={this.sendModelTestRequest} className="btn btn-default btn-success">Test</button>
-                  </div>
-              </div>
-          </div>
-          <div className="col-md-12">
-          <br />
             <div className="card">
               <div className="card-body">
                 <h3>
@@ -69,6 +70,18 @@ class ModelTest extends React.Component {
             </div>
           </div>
         </div>
+
+        <div className="row">
+          <DataUpload model_id={this.props.match.params.id}/>
+          <br />
+        </div>
+        <div className="row">
+          <div className="col-md-12">
+            <br />
+            <button onClick={this.sendModelTestRequest} className="btn btn-default btn-success btn-block">Test</button>
+          </div>
+        </div>
+      </div>
     )
 
   }

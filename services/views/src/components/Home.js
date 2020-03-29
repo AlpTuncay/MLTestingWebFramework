@@ -9,7 +9,7 @@ class Home extends React.Component {
                 <div className="col-md-8">
                     <div className="panel panel-default">
                         <div className="panel-heading">
-                            <h4>This framework can be used for training and testing the AI models developed locally.</h4>
+                            <h4>This framework can be used for testing the AI models developed locally.</h4>
                         </div>
                         <div className="panel-body">
                             <ol>

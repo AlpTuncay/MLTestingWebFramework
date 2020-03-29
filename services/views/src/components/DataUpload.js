@@ -7,6 +7,7 @@ class DataUpload extends React.Component {
 
   constructor(props){
     super(props);
+    this.state = {}
   }
 
 
@@ -43,8 +44,26 @@ class DataUpload extends React.Component {
 
     })
 
-  }
+  };
 
+  getAvailableDataForModel = () => {
+
+    axios.get(`http://localhost:5002/model/${this.props.model_id}/data`,
+            {headers: {"x-access-token": localStorage.getItem("x-access-token")}}
+    ).then(response => {
+        this.setState({
+          available_data: response.data.data.filename
+        });
+    }).catch(error => {
+      this.setState({
+        msg: error.response.data.message
+      });
+    })
+  };
+
+  componentDidMount(){
+    this.getAvailableDataForModel();
+  }
 
   render(){
 
@@ -53,7 +72,7 @@ class DataUpload extends React.Component {
             <br />
             <div className="card">
                 <div className="card-header">
-                  Upload your data
+                  {Boolean(this.state.available_data) ? `You have uploaded data for this model: ${this.state.available_data}` : `${this.state.msg}. Please upload data.`}
                 </div>
                 <div className="card-body d-flex justify-content-center">
                     <form className="form-inline" encType="multipart/form-data">

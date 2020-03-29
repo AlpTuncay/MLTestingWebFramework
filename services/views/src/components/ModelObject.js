@@ -25,7 +25,9 @@ class ModelObject extends React.Component {
           })
           console.log(...this.state.model_state);
       }).catch(error => {
-          console.error(error);
+          this.setState({
+            msg: error.response.data.message
+          })
       })
   }
 
@@ -53,7 +55,7 @@ class ModelObject extends React.Component {
             </div>
             <div>
               <label htmlFor="test">Test Results:</label>
-              <p id="test">{this.model_state}</p>
+              <p id="test">{Boolean(this.model_state) ? this.state.model_state : this.state.msg}</p>
             </div>
           </div>
         </div>

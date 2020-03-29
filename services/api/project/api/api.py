@@ -233,6 +233,25 @@ def upload_data(current_user):
         return jsonify(response), response["status"]
 
 
+@views_blueprint.route("/model/<model_id>/data", methods=["GET"])
+@cross_origin()
+@token_required
+def get_available_data_for_model(current_user, model_id):
+    try:
+        r = requests.get(f"http://data-provider:5000/model/{model_id}/data")
+
+        response = r.json()
+
+        return jsonify(response), response["status"]
+    except requests.exceptions.ConnectionError as e:
+        response = {
+            "status": 500,
+            "message": f"Connection error. {e}"
+        }
+
+        return jsonify(response), response["status"]
+
+
 @views_blueprint.route("/model/<model_id>/test", methods=["GET"])
 @cross_origin()
 @token_required

@@ -19,5 +19,6 @@ class ProviderObject(database.Model):
         return {
             "id": self.id,
             "model_id": self.model_id,
-            "data_path": self.data_path
+            "data_path": self.data_path,
+            "filename": os.path.basename(self.data_path)
         }

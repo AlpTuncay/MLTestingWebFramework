@@ -1,11 +1,12 @@
 version: "3.7"
 
 services:
-#  rabbitmq-broker:
-#    image: "rabbitmq"
-#    ports:
-#      - "5672:5672"
-#      - "15672:15672"
+
+  rabbitmq-broker:
+    image: "rabbitmq"
+    ports:
+      - "5672:5672"
+      - "15672:15672"
 
   register:
     build:
@@ -131,14 +132,14 @@ services:
       - provider-db
       - models-db
 
-  ai:
+  ai-master:
     build:
-      context: services/ai
-      dockerfile: Dockerfile_ubuntu
+      context: services/ai_master
+      dockerfile: Dockerfile
     volumes:
-      - "./services/ai:/usr/src/ml-framework"
+      - "./services/ai_master:/usr/src/ml-framework"
     ports:
-      - "5005:5000"
+      - "5007:5000"
     environment:
       - FLASK_ENV=development
       - APP_SETTINGS=project.config.DevelopmentConfig
@@ -146,10 +147,28 @@ services:
       - DATABASE_TEST_URL=postgres://postgres:postgres@modelstate-db:5432/modelstate_dev
       - RABBITMQ_USERNAME=guest
       - RABBITMQ_PASSWORD=guest
+    depends_on:
+      - modelstate-db
+      - rabbitmq-broker
+
+  ai-slave:
+    build:
+      context: services/ai_slave
+      dockerfile: Dockerfile_ubuntu
+    volumes:
+      - "./services/ai_slave:/usr/src/ml-framework"
+    ports:
+      - "5005:5000"
+    environment:
+      - FLASK_ENV=development
+      - APP_SETTINGS=project.config.DevelopmentConfig
+      - RABBITMQ_USERNAME=guest
+      - RABBITMQ_PASSWORD=guest
       - LC_ALL=en_US.utf-8
       - LANG=en_US.utf-8
     depends_on:
-      - modelstate-db
+      - ai-master
+      - rabbitmq-broker
 
   users-db:
     build:

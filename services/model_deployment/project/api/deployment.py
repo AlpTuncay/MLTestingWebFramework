@@ -129,8 +129,11 @@ def send_model_config(model_id):
         with open(model.path_to_model, "rb") as f:
             encoded = b64encode(f.read())
         f.close()
+        
         response = {
             "config": encoded.decode(),
+            "framework": model.model_framework,
+            "filename": model.to_json()["filename"],
             "status": 200
         }
 

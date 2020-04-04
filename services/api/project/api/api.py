@@ -263,7 +263,7 @@ def run_model_test(current_user, model_id):
 
         # TODO -> Instead of HTTP request to AI service, publish test request on a queue  and then return proper response to the user.
 
-        r = requests.get(f"http://ai:5000/test/{model_id}").json()
+        r = requests.get(f"http://ai-master:5000/test/{model_id}").json()
 
         logging.error(r)
 

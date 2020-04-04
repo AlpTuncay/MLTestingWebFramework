@@ -16,9 +16,9 @@ def create_app():
     app.logger.debug("Initiating database")
     database.init_app(app)
 
-    app.logger.debug("Registering blueprint")
-    from project.api.ai import ai_blueprint
-    app.register_blueprint(ai_blueprint)
+    # app.logger.debug("Registering blueprint")
+    # from project.api.ai import ai_blueprint
+    # app.register_blueprint(ai_blueprint)
 
     app.logger.debug("Blueprint registered")
 

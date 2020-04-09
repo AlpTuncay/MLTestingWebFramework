@@ -5,3 +5,4 @@ Flask-Testing==0.7.1
 pika
 Cython
 requests
+Pillow

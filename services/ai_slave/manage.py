@@ -12,7 +12,8 @@ import logging
 import json
 import os
 from base64 import b64encode, b64decode
-
+import shutil
+import zipfile
 
 if __name__ == '__main__':
 
@@ -39,11 +40,42 @@ if __name__ == '__main__':
             f.write(test_data)
         f.close()
 
+        compressed = zipfile.ZipFile("%s/%s" % (test_path, received["test_data_filename"]))
+        compressed.extractall(test_path)
+
+        response = {}
         # RUN THE TESTS HERE AND DELETE THE DATA AND THE MODEL CONFIG FILES
+        if received["framework"] == "Keras":
+            import keras
+            from keras.models import load_model
+            from keras.preprocessing.image import ImageDataGenerator
+
+            model = load_model(test_path + "/" + received["model_config_filename"])
+
+            test_gen = ImageDataGenerator(rescale=1./255)
+
+            generator = test_gen.flow_from_directory(test_path + "/data", target_size=(256, 256), class_mode="binary")
+
+            eval_result = model.evaluate_generator(generator)
+
+            response = {
+                "message": "Successfully loaded model",
+                "result_1": eval_result[0],
+                "result_2": eval_result[1]
+            }
+
+        elif received["framework"] == "Sklearn":
+            pass
+        elif received["framework"] == "Tensorflow":
+            pass
+        elif received["framework"] == "PyTorch":
+            pass
 
         response_producer = producer.Producer()
 
-        response_producer.produce("Test response sent from AI Slave")
+        response_producer.produce(json.dumps(response))
+
+        # shutil.rmtree("./test/model/%s" % received["model_id"])
 
 
     request_consumer = consumer.Consumer(callback=on_msg_receive)

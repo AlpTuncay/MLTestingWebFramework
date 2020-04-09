@@ -21,4 +21,6 @@ class Consumer:
         self.channel.start_consuming()
 
     def _on_msg_receive(self, ch, method, properties, body):
+        # Here send request to the model_information service with the results
+        # from ai_slave
         logging.error(" [X] Received %r" % body)

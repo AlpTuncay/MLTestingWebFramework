@@ -14,6 +14,8 @@ import os
 from base64 import b64encode, b64decode
 import shutil
 import zipfile
+import time
+from datetime import datetime
 
 if __name__ == '__main__':
 
@@ -41,7 +43,7 @@ if __name__ == '__main__':
         f.close()
 
         compressed = zipfile.ZipFile("%s/%s" % (test_path, received["test_data_filename"]))
-        compressed.extractall(test_path)
+        compressed.extractall(test_path + "/data")
 
         response = {}
         # RUN THE TESTS HERE AND DELETE THE DATA AND THE MODEL CONFIG FILES
@@ -50,19 +52,32 @@ if __name__ == '__main__':
             from keras.models import load_model
             from keras.preprocessing.image import ImageDataGenerator
 
-            model = load_model(test_path + "/" + received["model_config_filename"])
+            try:
 
-            test_gen = ImageDataGenerator(rescale=1./255)
+                model = load_model(test_path + "/" + received["model_config_filename"])
 
-            generator = test_gen.flow_from_directory(test_path + "/data", target_size=(256, 256), class_mode="binary")
+                test_gen = ImageDataGenerator(rescale=1./255)
 
-            eval_result = model.evaluate_generator(generator)
+                generator = test_gen.flow_from_directory(test_path + "/data", target_size=(256, 256), class_mode="binary")
 
-            response = {
-                "message": "Successfully loaded model",
-                "result_1": eval_result[0],
-                "result_2": eval_result[1]
-            }
+                start_time = time.time()
+                eval_result = model.evaluate_generator(generator)
+                elapsed_time = time.time() - start_time
+
+                response = {
+                    "message": "Successfully loaded model",
+                    model.metrics_names[0]: eval_result[0],
+                    model.metrics_names[1]: eval_result[1],
+                    "test_time": start_time,
+                    "duration": elapsed_time,
+                    "model_id": received["model_id"]
+                }
+
+            except Exception as e:
+                response = {
+                    "message": "Error occurred.",
+                    "exception": str(e)
+                }
 
         elif received["framework"] == "Sklearn":
             pass
@@ -75,7 +90,7 @@ if __name__ == '__main__':
 
         response_producer.produce(json.dumps(response))
 
-        # shutil.rmtree("./test/model/%s" % received["model_id"])
+        shutil.rmtree("./test/model/%s" % received["model_id"])
 
 
     request_consumer = consumer.Consumer(callback=on_msg_receive)

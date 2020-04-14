@@ -12,7 +12,7 @@ class ModelObject extends React.Component {
   constructor(props){
     super(props);
     this.state = {
-      model_state: []
+
     }
   }
 
@@ -21,10 +21,10 @@ class ModelObject extends React.Component {
                 {headers: {"x-access-token": window.localStorage.getItem("x-access-token")}}
       ).then(response => {
           this.setState({
-            model_state: response.data
+            model_state: response.data.data
           })
-          console.log(...this.state.model_state);
       }).catch(error => {
+          console.log(error)
           this.setState({
             msg: error.response.data.message
           })
@@ -35,7 +35,30 @@ class ModelObject extends React.Component {
     this.fetchModelState()
   }
 
+
+
   render() {
+    const printTestResults = () => {
+      if(Boolean(this.state.model_state)){
+        return (
+          <div id="test">
+            <p>Accuracy: {this.state.model_state.test_acc}</p>
+            <p>Loss: {this.state.model_state.test_loss}</p>
+            <p>Duration: {this.state.model_state.test_duration}</p>
+            <p>Time of test: {this.state.model_state.last_test_time}</p>
+          </div>
+        )
+      } else {
+        return (
+          <div id="test">
+            <p>Accuracy: N/A</p>
+            <p>Loss: N/A</p>
+            <p>Duration: N/A</p>
+            <p>Time of test: N/A</p>
+          </div>
+        )
+      }
+    }
     return (
       <div className="col-md-4">
         <br />
@@ -54,8 +77,7 @@ class ModelObject extends React.Component {
               <p id="filename">{this.props.name}</p>
             </div>
             <div>
-              <label htmlFor="test">Test Results:</label>
-              <p id="test">{Boolean(this.model_state) ? this.state.model_state : this.state.msg}</p>
+              {printTestResults()}
             </div>
           </div>
         </div>

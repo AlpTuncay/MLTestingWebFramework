@@ -11,7 +11,7 @@ class ModelState(database.Model):
     test_accuracy = database.Column(database.Float, nullable=False)
     test_loss = database.Column(database.Float, nullable=False)
     last_test_time = database.Column(database.DateTime, nullable=False)
-    test_duration = database.Column(database.DateTime, nullable=False)
+    test_duration = database.Column(database.Float, nullable=False)
 
     def __init__(self, model_id, test_accuracy, test_loss, last_test_time, test_duration):
         self.model_id = model_id
@@ -24,10 +24,8 @@ class ModelState(database.Model):
         return {
             "id": self.id,
             "model_id": self.model_id,
-            "test_acc": self.test_accuracy,
-            "test_loss": self.test_loss,
-            "last_test_time": self.last_test_time,
-            "test_duration": self.test_duration
+            "test_acc": round(self.test_accuracy, 2),
+            "test_loss": round(self.test_loss, 2),
+            "last_test_time": self.last_test_time.strftime("%m/%d/%Y %H:%M"),
+            "test_duration": round(self.test_duration, 2)
         }
-
-# WIP -> Find a way to store test results.

@@ -26,6 +26,6 @@ class ModelState(database.Model):
             "model_id": self.model_id,
             "test_acc": round(self.test_accuracy, 2),
             "test_loss": round(self.test_loss, 2),
-            "last_test_time": self.last_test_time.strftime("%m/%d/%Y %H:%M"),
+            "last_test_time": self.last_test_time.strftime("%d/%m/%Y %H:%M"),
             "test_duration": round(self.test_duration, 2)
         }

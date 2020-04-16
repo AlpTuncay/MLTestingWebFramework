@@ -1,12 +1,3 @@
-# from flask.cli import FlaskGroup
-# from project import create_app
-#
-# app = create_app()
-# cli = FlaskGroup(create_app=create_app)
-#
-#
-# if __name__ == '__main__':
-#     cli()
 from project.messaging import consumer, producer
 import logging
 import json
@@ -43,7 +34,7 @@ if __name__ == '__main__':
         f.close()
 
         compressed = zipfile.ZipFile("%s/%s" % (test_path, received["test_data_filename"]))
-        compressed.extractall(test_path + "/data")
+        compressed.extractall(test_path)
 
         response = {}
         # RUN THE TESTS HERE AND DELETE THE DATA AND THE MODEL CONFIG FILES

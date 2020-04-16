@@ -35,7 +35,9 @@ class ModelObject extends React.Component {
     this.fetchModelState()
   }
 
-
+  refresh = () => {
+    this.fetchModelState()
+  }
 
   render() {
     const printTestResults = () => {
@@ -78,8 +80,10 @@ class ModelObject extends React.Component {
             </div>
             <div>
               {printTestResults()}
+              <button className="btn btn-default btn-block" onClick={this.refresh}><i className="fa fa-refresh"></i></button>
             </div>
           </div>
+
         </div>
       </div>
     )

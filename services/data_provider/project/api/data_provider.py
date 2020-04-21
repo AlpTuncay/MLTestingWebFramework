@@ -36,7 +36,7 @@ def upload_test_data():
             if not os.path.exists(data_path):
                 os.makedirs(data_path)
 
-            with open(data_path + f"/{filename}", "wb+") as f:
+            with open(f"{data_path}/{filename}", "wb+") as f:
                 f.write(data)
 
             provider_object.data_path = data_path + f"/{filename}"

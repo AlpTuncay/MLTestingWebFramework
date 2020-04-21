@@ -7,6 +7,11 @@ import shutil
 import zipfile
 import time
 from datetime import datetime
+import json
+
+
+def parse_json_config(json):
+    pass
 
 if __name__ == '__main__':
 
@@ -20,10 +25,10 @@ if __name__ == '__main__':
             os.makedirs(test_path)
 
         # config_header, config_encoded = received["model_config"].split(",", 1)
-        config_data = b64decode(received["model_config"])
+        model_config_data = b64decode(received["model_config"])
 
         with open("%s/%s" % (test_path, received["model_config_filename"]), "wb+") as f:
-            f.write(config_data)
+            f.write(model_config_data)
         f.close()
 
         # test_data_header, test_data_encoded = received["test_data"].split(",", 1)
@@ -36,6 +41,16 @@ if __name__ == '__main__':
         compressed = zipfile.ZipFile("%s/%s" % (test_path, received["test_data_filename"]))
         compressed.extractall(test_path)
 
+        test_config_data = b64decode(received["config_file"])
+
+        with open("%s/%s" % (test_path, received["config_filename"]), "wb+") as f:
+            f.write(test_config_data)
+        f.close()
+
+        with open("%s/%s" % (test_path, received["config_filename"]), "r") as f:
+            config = json.load(f)
+        f.close()
+
         response = {}
         # RUN THE TESTS HERE AND DELETE THE DATA AND THE MODEL CONFIG FILES
         if received["framework"] == "Keras":
@@ -43,13 +58,19 @@ if __name__ == '__main__':
             from keras.models import load_model
             from keras.preprocessing.image import ImageDataGenerator
 
+            img_data_gen_args = config["image_data_generator_args"]
+            flow_from_dir_args = config["flow_from_directory_args"]
+
             try:
 
                 model = load_model(test_path + "/" + received["model_config_filename"])
 
-                test_gen = ImageDataGenerator(rescale=1./255)
+                rescale_to_float = img_data_gen_args["rescale"].split("/")
+                rescale = float(rescale_to_float[0])/float(rescale_to_float[1])
 
-                generator = test_gen.flow_from_directory(test_path + "/data", target_size=(256, 256), class_mode="binary")
+                test_gen = ImageDataGenerator(rescale=rescale)
+
+                generator = test_gen.flow_from_directory(test_path + "/data", **flow_from_dir_args)
 
                 start_time = time.time()
                 eval_result = model.evaluate_generator(generator)

@@ -58,22 +58,51 @@ if __name__ == '__main__':
             from keras.models import load_model
             from keras.preprocessing.image import ImageDataGenerator
 
-            img_data_gen_args = config["image_data_generator_args"]
-            flow_from_dir_args = config["flow_from_directory_args"]
+            model = load_model(test_path + "/" + received["model_config_filename"])
 
-            try:
+            if config["data_type"] == "image":
+                img_data_gen_args = config["image_data_generator_args"]
+                flow_from_dir_args = config["flow_from_directory_args"]
 
-                model = load_model(test_path + "/" + received["model_config_filename"])
+                try:
 
-                rescale_to_float = img_data_gen_args["rescale"].split("/")
-                rescale = float(rescale_to_float[0])/float(rescale_to_float[1])
+                    rescale_to_float = img_data_gen_args["rescale"].split("/")
+                    rescale = float(rescale_to_float[0])/float(rescale_to_float[1])
 
-                test_gen = ImageDataGenerator(rescale=rescale)
+                    test_gen = ImageDataGenerator(rescale=rescale)
 
-                generator = test_gen.flow_from_directory(test_path + "/data", **flow_from_dir_args)
+                    generator = test_gen.flow_from_directory(test_path + "/data", **flow_from_dir_args)
+
+                    start_time = time.time()
+                    eval_result = model.evaluate_generator(generator)
+                    elapsed_time = time.time() - start_time
+
+                    response = {
+                        "message": "Successfully loaded model",
+                        model.metrics_names[0]: eval_result[0],
+                        model.metrics_names[1]: eval_result[1],
+                        "test_time": start_time,
+                        "duration": elapsed_time,
+                        "model_id": received["model_id"]
+                    }
+
+                except Exception as e:
+                    response = {
+                        "message": "Error occurred.",
+                        "exception": str(e)
+                    }
+            elif config["data_type"] == "csv":
+                import numpy as np
+                # import pandas as pd
+                from numpy import loadtxt
+                data_file = os.listdir(test_path + "/data")[0]
+                test_data = loadtxt(test_path + "/data/" + data_file, delimiter=",")
+
+                y = test_data[:, config["target"]]
+                X = np.delete(test_data, config["target"], axis=1)
 
                 start_time = time.time()
-                eval_result = model.evaluate_generator(generator)
+                eval_result = model.evaluate(X, y)
                 elapsed_time = time.time() - start_time
 
                 response = {
@@ -83,12 +112,6 @@ if __name__ == '__main__':
                     "test_time": start_time,
                     "duration": elapsed_time,
                     "model_id": received["model_id"]
-                }
-
-            except Exception as e:
-                response = {
-                    "message": "Error occurred.",
-                    "exception": str(e)
                 }
 
         elif received["framework"] == "Sklearn":

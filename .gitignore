@@ -1,2 +1,6 @@
 .idea
 *.pyc
+*.json
+.*h5
+*.model
+*.zip

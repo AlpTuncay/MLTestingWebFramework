@@ -98,16 +98,17 @@ def provide_test_config(model_id):
     elif request.method == "GET":
         config_path = f"./config/model/{model_id}"
 
-        config_file = os.listdir(config_path)
+        try:
+            config_file = os.listdir(config_path)
 
-        if config_file:
+            # if config_file:
             response = {
                 "status": 200,
                 "available_config": config_file[0]
             }
 
             return jsonify(response), response["status"]
-        else :
+        except :
             response = {
                 "status": 404,
                 "message": "No config file found."

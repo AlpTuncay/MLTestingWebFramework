@@ -32,12 +32,12 @@ class CreateModelTestConfig extends React.Component {
             {headers: {"x-access-token": localStorage.getItem("x-access-token")}}
     ).then(response => {
         this.setState({
-          available_config: response.data.filename
+          available_config: response.data.available_config
         });
     }).catch(error => {
       console.log(error)
       this.setState({
-        msg: error.response.message
+        msg: error.response.data.message
       });
     })
   };
@@ -76,7 +76,7 @@ class CreateModelTestConfig extends React.Component {
           <br />
           <div className="card">
               <div className="card-header">
-                {Boolean(this.state.available_config) ? `You have already provided config: ${this.state.available_config}` : "Please provide a config JSON file."}
+                {Boolean(this.state.available_config) ? `You have already provided config: ${this.state.available_config}` : `${this.state.msg} Please provide a JSON config file.`}
               </div>
               <div className="card-body d-flex justify-content-center">
                   <form className="form-inline" encType="multipart/form-data">

@@ -1,6 +1,8 @@
 .idea
 *.pyc
 *.json
-.*h5
+*.h5
+*.joblib
 *.model
 *.zip
+*.png

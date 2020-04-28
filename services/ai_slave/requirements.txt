@@ -8,3 +8,4 @@ requests
 Pillow
 joblib
 scikit-learn
+pandas

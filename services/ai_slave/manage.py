@@ -121,7 +121,7 @@ if __name__ == '__main__':
         elif received["framework"] == "Sklearn":
             from joblib import load
             from sklearn.metrics import accuracy_score, log_loss
-            from numpy import loadtxt
+            import pandas as pd
             import numpy as np
 
             model = load(test_path + "/" + received["model_config_filename"])
@@ -130,7 +130,8 @@ if __name__ == '__main__':
                 if config["data_structure"] == "single":
 
                     data_file = os.listdir(test_path + "/data")[0]
-                    test_data = loadtxt(test_path + "/data/" + data_file, delimiter=",")
+                    test_dataframe = pd.read_csv(test_path + "/data/" + data_file, header=None)
+                    test_data = test_dataframe.values
 
                     y = list(test_data[:, config["target"]])
                     X = list(np.delete(test_data, config["target"], axis=1))
@@ -158,7 +159,7 @@ if __name__ == '__main__':
 
         elif received["framework"] == "Tensorflow":
             pass
-            
+
         elif received["framework"] == "PyTorch":
             pass
 

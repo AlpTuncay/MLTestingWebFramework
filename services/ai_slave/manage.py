@@ -78,7 +78,7 @@ if __name__ == '__main__':
                     elapsed_time = time.time() - start_time
 
                     response = {
-                        "message": "Successfully loaded model",
+                        "message": "Success",
                         model.metrics_names[0]: eval_result[0],
                         model.metrics_names[1]: eval_result[1],
                         "test_time": start_time,
@@ -93,20 +93,24 @@ if __name__ == '__main__':
                     }
             elif config["data_type"] == "csv":
                 import numpy as np
-                # import pandas as pd
-                from numpy import loadtxt
-                data_file = os.listdir(test_path + "/data")[0]
-                test_data = loadtxt(test_path + "/data/" + data_file, delimiter=",")
 
-                y = test_data[:, config["target"]]
-                X = np.delete(test_data, config["target"], axis=1)
+                if config["data_structure"] == "single":
+                    from numpy import loadtxt
+                    data_file = os.listdir(test_path + "/data")[0]
+                    test_data = loadtxt(test_path + "/data/" + data_file, delimiter=",")
 
-                start_time = time.time()
-                eval_result = model.evaluate(X, y)
-                elapsed_time = time.time() - start_time
+                    y = test_data[:, config["target"]]
+                    X = np.delete(test_data, config["target"], axis=1)
+
+                    start_time = time.time()
+                    eval_result = model.evaluate(X, y)
+                    elapsed_time = time.time() - start_time
+
+                elif config["data_structure"] == "folder":
+                    pass
 
                 response = {
-                    "message": "Successfully loaded model",
+                    "message": "Success",
                     model.metrics_names[0]: eval_result[0],
                     model.metrics_names[1]: eval_result[1],
                     "test_time": start_time,
@@ -115,9 +119,46 @@ if __name__ == '__main__':
                 }
 
         elif received["framework"] == "Sklearn":
-            pass
+            from joblib import load
+            from sklearn.metrics import accuracy_score, log_loss
+            from numpy import loadtxt
+            import numpy as np
+
+            model = load(test_path + "/" + received["model_config_filename"])
+
+            if config["data_type"] == "csv":
+                if config["data_structure"] == "single":
+
+                    data_file = os.listdir(test_path + "/data")[0]
+                    test_data = loadtxt(test_path + "/data/" + data_file, delimiter=",")
+
+                    y = list(test_data[:, config["target"]])
+                    X = list(np.delete(test_data, config["target"], axis=1))
+
+                    start_time = time.time()
+                    predictions = model.predict(X)
+                    accuracy_score = accuracy_score(y, predictions)
+                    loss_value = log_loss(y, predictions)
+                    elapsed_time = time.time() - start_time
+
+                elif config["data_structure"] == "folder":
+                    pass
+
+            elif config["data_type"] == "image":
+                pass
+
+            response = {
+                "message": "Success",
+                "accuracy": accuracy_score,
+                "loss": loss_value,
+                "test_time": start_time,
+                "duration": elapsed_time,
+                "model_id": received["model_id"]
+            }
+
         elif received["framework"] == "Tensorflow":
             pass
+            
         elif received["framework"] == "PyTorch":
             pass
 

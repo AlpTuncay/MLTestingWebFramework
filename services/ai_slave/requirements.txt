@@ -6,3 +6,5 @@ pika
 Cython
 requests
 Pillow
+joblib
+scikit-learn

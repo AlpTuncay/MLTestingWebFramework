@@ -27,12 +27,12 @@ class Consumer:
         # from ai_slave
         logging.error(" [X] Received %r" % body)
         received = json.loads(body)
-
-        r = requests.post("http://model-info:5000/model_info", json={"data":{
-                                                                        "model_id": received["model_id"],
-                                                                        "test_acc": received["accuracy"],
-                                                                        "test_loss": received["loss"],
-                                                                        "last_test_time": received["test_time"],
-                                                                        "test_duration": received["duration"]
-                                                                        }
-                                                                    })
+        if received["message"] == "Success":
+            r = requests.post("http://model-info:5000/model_info", json={"data":{
+                                                                            "model_id": received["model_id"],
+                                                                            "test_acc": received["accuracy"],
+                                                                            "test_loss": received["loss"],
+                                                                            "last_test_time": received["test_time"],
+                                                                            "test_duration": received["duration"]
+                                                                            }
+                                                                        })

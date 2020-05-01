@@ -15,12 +15,13 @@ def create_state_instance():
     test_loss = request.json["data"]["test_loss"]
     last_test_time = request.json["data"]["last_test_time"]
     test_duration = request.json["data"]["test_duration"]
+    test_status = request.json["data"]["test_status"]
 
     last_test_time = datetime.fromtimestamp(last_test_time)
 
     model_state = ModelState(model_id=model_id, test_accuracy=test_accuracy,
                             test_loss=test_loss, last_test_time=last_test_time,
-                            test_duration=test_duration)
+                            test_duration=test_duration, test_status=test_status)
 
     try:
         database.session.add(model_state)
@@ -108,7 +109,7 @@ def get_latest_model_state(model_id):
                 "message": "Successfully fetched model state.",
                 "data": model_state.to_json()
             }
-            
+
             return jsonify(response), response["status"]
 
     except Exception as e:

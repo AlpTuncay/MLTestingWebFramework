@@ -25,8 +25,8 @@ class Consumer:
     def _on_msg_receive(self, ch, method, properties, body):
         # Here send request to the model_information service with the results
         # from ai_slave
-        logging.error(" [X] Received %r" % body)
         received = json.loads(body)
+        logging.error(" [X] Received %r" % received)
 
         test_status = received["test_status"]
         model_id = received["model_id"]

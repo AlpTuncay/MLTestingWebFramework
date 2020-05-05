@@ -1,4 +1,4 @@
-from project.messaging import consumer, producer
+from messaging import consumer, producer
 import logging
 import json
 import os

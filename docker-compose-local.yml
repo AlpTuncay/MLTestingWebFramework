@@ -154,7 +154,7 @@ services:
   ai-slave:
     build:
       context: services/ai_slave
-      dockerfile: Dockerfile_ubuntu
+      dockerfile: Dockerfile
     volumes:
       - "./services/ai_slave:/usr/src/ml-framework"
     ports:

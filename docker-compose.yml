@@ -3,14 +3,17 @@ version: "3.7"
 services:
   rabbitmq-broker:
     image: "rabbitmq"
+    deploy:
+      placement:
+        constraints: [node.role == manager]
     ports:
       - "5672:5672"
       - "15672:15672"
 
   register:
     image: "alpt96/mltestingwebframework:register"
-    volumes:
-      - './services/register:/usr/src/ml-framework'
+    # volumes:
+    #   - './services/register:/usr/src/ml-framework'
     ports:
       - "5000:5000"
     environment:
@@ -20,14 +23,116 @@ services:
       - DATABASE_TEST_URL=postgres://postgres:postgres@users-db:5432/users_test
       - RABBITMQ_USERNAME=guest
       - RABBITMQ_PASSWORD=guest
+    deploy:
+      placement:
+        constraints: [node.role == manager]
     depends_on:
       - users-db
+      - api
+
+  models:
+    image: "alpt96/mltestingwebframework:model_deployment"
+    # volumes:
+    #   - "./services/model_deployment:/usr/src/ml-framework"
+    ports:
+      - "5003:5000"
+    environment:
+      - FLASK_ENV=development
+      - APP_SETTINGS=project.config.DevelopmentConfig
+      - DATABASE_URL=postgres://postgres:postgres@models-db:5432/models_dev
+      - DATABASE_TEST_URL=postgres://postgres:postgres@models-db:5432/models_dev
+      - RABBITMQ_USERNAME=guest
+      - RABBITMQ_PASSWORD=guest
+    deploy:
+      placement:
+        constraints: [node.role == manager]
+    depends_on:
+      - models-db
+
+  model-info:
+    image: "alpt96/mltestingwebframework:model_information"
+    # volumes:
+    #   - "./services/model_information:/usr/src/ml-framework"
+    ports:
+      - "5004:5000"
+    environment:
+      - FLASK_ENV=development
+      - APP_SETTINGS=project.config.DevelopmentConfig
+      - DATABASE_URL=postgres://postgres:postgres@modelstate-db:5432/modelstate_dev
+      - DATABASE_TEST_URL=postgres://postgres:postgres@modelstate-db:5432/modelstate_dev
+      - RABBITMQ_USERNAME=guest
+      - RABBITMQ_PASSWORD=guest
+    deploy:
+      placement:
+        constraints: [node.role == manager]
+    depends_on:
+      - modelstate-db
+      - models-db
+
+  data-provider:
+    image: "alpt96/mltestingwebframework:data_provider"
+    # volumes:
+    #   - "./services/data_provider:/usr/src/ml-framework"
+    ports:
+      - "5006:5000"
+    environment:
+      - FLASK_ENV=development
+      - APP_SETTINGS=project.config.DevelopmentConfig
+      - DATABASE_URL=postgres://postgres:postgres@provider-db:5432/provider_dev
+      - DATABASE_TEST_URL=postgres://postgres:postgres@provider-db:5432/provider_dev
+      - RABBITMQ_USERNAME=guest
+      - RABBITMQ_PASSWORD=guest
+    deploy:
+      placement:
+        constraints: [node.role == manager]
+    depends_on:
+      - provider-db
+      - models-db
+
+  ai-master:
+    image: "alpt96/mltestingwebframework:ai_master"
+    # volumes:
+    #   - "./services/ai_master:/usr/src/ml-framework"
+    ports:
+      - "5007:5000"
+    environment:
+      - FLASK_ENV=development
+      - APP_SETTINGS=project.config.DevelopmentConfig
+      - DATABASE_URL=postgres://postgres:postgres@modelstate-db:5432/modelstate_dev
+      - DATABASE_TEST_URL=postgres://postgres:postgres@modelstate-db:5432/modelstate_dev
+      - RABBITMQ_USERNAME=guest
+      - RABBITMQ_PASSWORD=guest
+    deploy:
+      placement:
+        constraints: [node.role == manager]
+    depends_on:
+      - modelstate-db
+      - rabbitmq-broker
+
+  ai-slave:
+    image: "alpt96/mltestingwebframework:ai_slave"
+    # volumes:
+    #   - "./services/ai_slave:/usr/src/ml-framework"
+    ports:
+      - "5005:5000"
+    environment:
+      - FLASK_ENV=development
+      - APP_SETTINGS=project.config.DevelopmentConfig
+      - RABBITMQ_USERNAME=guest
+      - RABBITMQ_PASSWORD=guest
+      - LC_ALL=en_US.utf-8
+      - LANG=en_US.utf-8
+    deploy:
+      placement:
+        constraints: [node.hostname == raspberrypi]
+    depends_on:
+      - ai-master
       - rabbitmq-broker
 
   login:
     image: "alpt96/mltestingwebframework:login"
-    volumes:
-      - './services/register:/usr/src/ml-framework'
+    # volumes:
+    #   - './services/register:/usr/src/ml-framework'
     ports:
       - "5001:5001"
     environment:
@@ -37,56 +142,80 @@ services:
       - DATABASE_TEST_URL=postgres://postgres:postgres@users-db:5432/users_test
       - RABBITMQ_USERNAME=guest
       - RABBITMQ_PASSWORD=guest
+    deploy:
+      placement:
+        constraints: [node.role == manager]
     depends_on:
       - users-db
-      - rabbitmq-broker
+      - api
 
   views:
-    image: "alpt96/mltestingwebframework:api"
-    volumes:
-      - './services/register:/usr/src/ml-framework'
+    image: "alpt96/mltestingwebframework:views"
+    # volumes:
+    #   - './services/register:/usr/src/ml-framework'
     ports:
-      - "5002:5002"
+      - "3001:3000"
+    environment:
+      - NODE_ENV=development
+    deploy:
+      placement:
+        constraints: [node.role == manager]
+    depends_on:
+      - api
+
+  api:
+    image: "alpt96/mltestingwebframework:api"
+    ports:
+      - "5002:5000"
     environment:
       - FLASK_ENV=development
       - APP_SETTINGS=project.config.DevelopmentConfig
-  #      - DATABASE_URL=postgres://postgres:postgres@users-db:5432/users_dev
-  #      - DATABASE_TEST_URL=postgres://postgres:postgres@users-db:5432/users_test
       - RABBITMQ_USERNAME=guest
       - RABBITMQ_PASSWORD=guest
-    depends_on:
-      - rabbitmq-broker
+    deploy:
+      placement:
+        constraints: [node.role == manager]
 
   users-db:
-    build:
-      context: ./services/register/project/db
-      dockerfile: Dockerfile
+    image: "alpt96/mltestingwebframework:users_db"
     ports:
       - "5432:5432"
+    deploy:
+      placement:
+        constraints: [node.role == manager]
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
 
-
-  rabbitmq-consumer:
-    image: "alpt96/mltestingwebframework:simple-consumer"
+  models-db:
+    image: "alpt96/mltestingwebframework:models_db"
+    ports:
+      - "5433:5432"
+    deploy:
+      placement:
+        constraints: [node.role == manager]
     environment:
-  #      - RABBITMQ_USERNAME=guest
-  #      - RABBITMQ_PASSWORD=guest
-      - QUEUE=register-service-queue
-      - BROKER=rabbitmq-broker
-      - PORT=5672
-      - EXCHANGE=requests
-    depends_on:
-      - rabbitmq-broker
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
 
-  rabbitmq-producer:
-    image: "alpt96/mltestingwebframework:simple-producer"
+  modelstate-db:
+    image: "alpt96/mltestingwebframework:modelstate_db"
+    ports:
+      - "5434:5432"
+    deploy:
+      placement:
+        constraints: [node.role == manager]
     environment:
-  #      - RABBITMQ_USERNAME=guest
-  #      - RABBITMQ_PASSWORD=guest
-      - BROKER=rabbitmq-broker
-      - EXCHANGE=requests
-      - PORT=5672
-    depends_on:
-      - rabbitmq-broker
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+
+  provider-db:
+    image: "alpt96/mltestingwebframework:provider_db"
+    ports:
+      - "5435:5432"
+    deploy:
+      placement:
+        constraints: [node.role == manager]
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres

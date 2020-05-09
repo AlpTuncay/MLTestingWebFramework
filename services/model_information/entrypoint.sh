@@ -13,5 +13,5 @@ echo "PostgreSQL started"
 #done
 #
 #echo "RabbitMQ Broker started"
-
+python manage.py create-db
 python manage.py run -h 0.0.0.0

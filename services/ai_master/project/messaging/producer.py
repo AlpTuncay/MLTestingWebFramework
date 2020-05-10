@@ -13,7 +13,7 @@ class Producer:
         self.queue = "test-request-queue"
 
     def produce(self, body):
-        # self.channel.queue_declare(queue=self.queue)
+        self.channel.queue_declare(queue=self.queue)
 
-        self.channel.basic_publish(exchange="amq.topic", routing_key="test-request", body=body)
+        self.channel.basic_publish(exchange="amq.topic", routing_key=self.queue, body=body)
         self.connection.close()

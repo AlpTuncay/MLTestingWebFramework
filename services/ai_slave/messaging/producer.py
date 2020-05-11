@@ -5,7 +5,8 @@ class Producer:
 
     def __init__(self):
         self.connection = pika.BlockingConnection(
-            pika.ConnectionParameters(host="rabbitmq-broker")
+            pika.ConnectionParameters(host="rabbitmq-broker"),
+            pika.PlainCredentials("admin", "admin")
         )
 
         self.channel = self.connection.channel()

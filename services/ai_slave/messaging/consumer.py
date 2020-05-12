@@ -6,7 +6,7 @@ class Consumer:
 
     def __init__(self, callback):
         self.connection = pika.BlockingConnection(
-            pika.ConnectionParameters(host="rabbitmq-broker")
+            pika.ConnectionParameters(host="rabbitmq-broker", credentials=pika.PlainCredentials("admin", "admin"))
         )
 
         self.channel = self.connection.channel()

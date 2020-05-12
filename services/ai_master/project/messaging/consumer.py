@@ -16,7 +16,7 @@ class Consumer:
         self.queue = "test-response-queue"
 
     def consume(self):
-        # self.channel.queue_declare(queue=self.queue, durable=True)
+        self.channel.queue_declare(queue=self.queue)
 
         self.channel.basic_consume(queue=self.queue, on_message_callback=self._on_msg_receive, auto_ack=True)
 

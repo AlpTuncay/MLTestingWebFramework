@@ -16,7 +16,7 @@ class Consumer:
         self.callback = callback
 
     def consume(self):
-        # self.channel.queue_declare(queue=self.queue, durable=True)
+        self.channel.queue_declare(queue=self.queue)
 
         self.channel.basic_consume(queue=self.queue, on_message_callback=self.callback, auto_ack=True)
         self.channel.start_consuming()

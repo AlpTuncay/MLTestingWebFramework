@@ -1,4 +1,4 @@
-FROM rabbitmq:3.7
+FROM rabbitmq
 
 WORKDIR /usr/local/bin/
 ADD ./entrypoint.sh .

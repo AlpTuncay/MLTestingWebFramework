@@ -2,13 +2,13 @@ version: "3.7"
 
 services:
   rabbitmq-broker:
-    image: "rabbitmq"
+    image: "rabbitmq:management"
     deploy:
       placement:
         constraints: [node.role == manager]
-    command: >
-      bash -c "rabbitmq-plugins enable rabbitmq_management
-              && rabbitmq-server"
+    environment:
+      - RABBITMQ_DEFAULT_USER=admin
+      - RABBITMQ_DEFAULT_PASS=admin
     ports:
       - "5672:5672"
       - "15672:15672"
@@ -24,8 +24,6 @@ services:
       - APP_SETTINGS=project.config.DevelopmentConfig
       - DATABASE_URL=postgres://postgres:postgres@users-db:5432/users_dev
       - DATABASE_TEST_URL=postgres://postgres:postgres@users-db:5432/users_test
-      - RABBITMQ_USERNAME=guest
-      - RABBITMQ_PASSWORD=guest
     deploy:
       placement:
         constraints: [node.role == manager]
@@ -103,8 +101,8 @@ services:
       - APP_SETTINGS=project.config.DevelopmentConfig
       - DATABASE_URL=postgres://postgres:postgres@modelstate-db:5432/modelstate_dev
       - DATABASE_TEST_URL=postgres://postgres:postgres@modelstate-db:5432/modelstate_dev
-      - RABBITMQ_USERNAME=guest
-      - RABBITMQ_PASSWORD=guest
+      - RABBITMQ_USERNAME=admin
+      - RABBITMQ_PASSWORD=admin
     deploy:
       placement:
         constraints: [node.role == manager]
@@ -121,8 +119,8 @@ services:
     environment:
       - FLASK_ENV=development
       - APP_SETTINGS=project.config.DevelopmentConfig
-      - RABBITMQ_USERNAME=guest
-      - RABBITMQ_PASSWORD=guest
+      - RABBITMQ_USERNAME=admin
+      - RABBITMQ_PASSWORD=admin
       - LC_ALL=en_US.utf-8
       - LANG=en_US.utf-8
     deploy:

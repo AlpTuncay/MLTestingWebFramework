@@ -15,5 +15,5 @@ class Producer:
     def produce(self, body):
         self.channel.queue_declare(queue=self.queue)
 
-        self.channel.basic_publish(routing_key=self.queue, body=body)
+        self.channel.basic_publish(exchange="", routing_key=self.queue, body=body)
         self.connection.close()

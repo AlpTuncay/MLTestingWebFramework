@@ -1,4 +1,4 @@
-FROM ubuntu:18.04
+FROM arm32v7/ubuntu:18.04
 
 RUN apt-get update \
     && DEBIAN_FRONTEND=noninteractive apt-get install -y locales \

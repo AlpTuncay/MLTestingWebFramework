@@ -35,7 +35,7 @@ class DataUpload extends React.Component {
     let formData = new FormData();
     formData.append("data_file", dataFileToUpload);
 
-    axios.post("http://localhost:5002/data/upload",
+    axios.post("http://127.0.0.1:5002/data/upload",
                 {data: {model_id: this.props.model_id, data_file: formData.get("data_file"), filename: this.state.filename}},
                 {headers: {"x-access-token": localStorage.getItem("x-access-token")}}
     ).then(response => {
@@ -48,7 +48,7 @@ class DataUpload extends React.Component {
 
   getAvailableDataForModel = () => {
 
-    axios.get(`http://localhost:5002/model/${this.props.model_id}/data`,
+    axios.get(`http://127.0.0.1:5002/model/${this.props.model_id}/data`,
             {headers: {"x-access-token": localStorage.getItem("x-access-token")}}
     ).then(response => {
         this.setState({

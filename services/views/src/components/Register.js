@@ -28,7 +28,7 @@ class Register extends React.Component {
     registerBtnOnClick = (event) => {
         event.preventDefault();
         axios.post(
-            'http://localhost:5002/register',
+            'http://127.0.0.1:5002/register',
             {data: this.state}
         ).then(response => {
             this.setState({

@@ -18,7 +18,7 @@ class Main extends React.Component {
     fetchUser = () => {
         console.log("Requesting with " + window.localStorage.getItem("x-access-token"));
         axios.get(
-            "http://localhost:5002/user/profile",
+            "http://127.0.0.1:5002/user/profile",
             {headers: {"x-access-token": window.localStorage.getItem("x-access-token")}}
         ).then(response => {
             console.log(response.data);

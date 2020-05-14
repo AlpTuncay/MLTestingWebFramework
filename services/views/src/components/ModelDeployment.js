@@ -45,7 +45,7 @@ class ModelDeployment extends React.Component {
 
         console.log(...formData);
 
-        axios.post("http://localhost:5002/model/deploy",
+        axios.post("http://127.0.0.1:5002/model/deploy",
             {data: {"model_title": formData.get("model_title"),
                     "model_framework": formData.get("model_framework")}, "files": formData.get("model_file"), "filename": this.state.filename},
             {headers: {"x-access-token": localStorage.getItem("x-access-token")}}

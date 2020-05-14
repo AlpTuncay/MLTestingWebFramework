@@ -26,7 +26,7 @@ class Login extends React.Component{
         //Send request to API /login endpoint
         //Get the response back and save the JWT to localStorage
         event.preventDefault();
-        axios.post("http://localhost:5002/login",
+        axios.post("http://127.0.0.1:5002/login",
             {data: this.state}
         ).then(response => {
             this.setState({

@@ -19,7 +19,7 @@ class ModelTest extends React.Component {
   }
 
   fetchModelDetails = () => {
-    axios.get("http://localhost:5002/models/".concat(this.props.match.params.id.toString()),
+    axios.get("http://127.0.0.1:5002/models/".concat(this.props.match.params.id.toString()),
               {headers: {"x-access-token": window.localStorage.getItem("x-access-token")}}
     ).then(response => {
       console.log(response.data)
@@ -34,7 +34,7 @@ class ModelTest extends React.Component {
   }
 
   sendModelTestRequest = () => {
-    axios.get(`http://localhost:5002/model/${this.props.match.params.id}/test`,
+    axios.get(`http://127.0.0.1:5002/model/${this.props.match.params.id}/test`,
               {headers: {"x-access-token": window.localStorage.getItem("x-access-token")}}
     ).then(response => {
       console.log(response)

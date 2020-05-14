@@ -28,7 +28,7 @@ class CreateModelTestConfig extends React.Component {
 
   getAvailableConfig = () => {
 
-    axios.get(`http://localhost:5002/test/config/${this.props.model_id}`,
+    axios.get(`http://127.0.0.1:5002/test/config/${this.props.model_id}`,
             {headers: {"x-access-token": localStorage.getItem("x-access-token")}}
     ).then(response => {
         this.setState({
@@ -52,7 +52,7 @@ class CreateModelTestConfig extends React.Component {
 
       console.log(...formData);
 
-      axios.post("http://localhost:5002/test/config",
+      axios.post("http://127.0.0.1:5002/test/config",
           {data: {model_id: this.props.model_id, config_file: formData.get("config_file"), filename:this.state.filename}},
           {headers: {"x-access-token": localStorage.getItem("x-access-token")}}
       ).then(response => {

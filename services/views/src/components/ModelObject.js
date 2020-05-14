@@ -17,7 +17,7 @@ class ModelObject extends React.Component {
   }
 
   fetchModelState = () => {
-      axios.get("http://localhost:5002/model/info/".concat(this.props.model_id.toString()),
+      axios.get("http://127.0.0.1:5002/model/info/".concat(this.props.model_id.toString()),
                 {headers: {"x-access-token": window.localStorage.getItem("x-access-token")}}
       ).then(response => {
           this.setState({

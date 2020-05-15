@@ -56,15 +56,13 @@ def run_keras(config, test_path, received):
 
     elif config["data_type"] == "csv":
         import numpy as np
-        import pandas as pd
 
         start_time = time.time()
         try:
             if config["data_structure"] == "single":
 
                 data_file = os.listdir(test_path + "/data")[0]
-                test_dataframe = pd.read_csv(test_path + "/data/" + data_file, header=None)
-                test_data = test_dataframe.values
+                test_data = np.genfromtxt(test_path + "/data/" + data_file, delimiter=",", skip_header = int(config["skip_rows"]) if "skip_rows" in config else 1)
 
                 y = test_data[:, config["target"]]
                 X = np.delete(test_data, config["target"], axis=1)
@@ -97,7 +95,6 @@ def run_sklearn(config, test_path, received):
     from joblib import load
     import importlib
     from sklearn.metrics import log_loss
-    import pandas as pd
     import numpy as np
 
     start_time = time.time()
@@ -109,9 +106,8 @@ def run_sklearn(config, test_path, received):
             if config["data_structure"] == "single":
 
                 data_file = os.listdir(test_path + "/data")[0]
-                test_dataframe = pd.read_csv(test_path + "/data/" + data_file, header=None)
-                test_data = test_dataframe.values
-
+                test_data = np.genfromtxt(test_path + "/data/" + data_file, delimiter=",", skip_header = int(config["skip_rows"]) if "skip_rows" in config else 1)
+                logging.error(test_data)
                 y = list(test_data[:, config["target"]])
                 X = list(np.delete(test_data, config["target"], axis=1))
 
@@ -141,7 +137,7 @@ def run_sklearn(config, test_path, received):
             "reason": str(e),
             "test_status": "Fail"
         }
-
+        raise e
     return response
 
 if __name__ == '__main__':

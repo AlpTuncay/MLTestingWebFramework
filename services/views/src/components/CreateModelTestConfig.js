@@ -56,9 +56,7 @@ class CreateModelTestConfig extends React.Component {
           {data: {model_id: this.props.model_id, config_file: formData.get("config_file"), filename:this.state.filename}},
           {headers: {"x-access-token": localStorage.getItem("x-access-token")}}
       ).then(response => {
-        this.setState({
-          available_config: response.data.data.filename
-        })
+        this.getAvailableConfig()
       }).catch(error => {
 
       })

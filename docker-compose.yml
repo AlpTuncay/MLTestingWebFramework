@@ -15,8 +15,8 @@ services:
 
   register:
     image: "alpt96/mltestingwebframework:register"
-    # volumes:
-    #   - './services/register:/usr/src/ml-framework'
+    volumes:
+      - register-service:/usr/src/ml-framework
     ports:
       - "5000:5000"
     environment:
@@ -33,8 +33,8 @@ services:
 
   models:
     image: "alpt96/mltestingwebframework:model_deployment"
-    # volumes:
-    #   - "./services/model_deployment:/usr/src/ml-framework"
+    volumes:
+      - model-deployment-service:/usr/src/ml-framework
     ports:
       - "5003:5000"
     environment:
@@ -52,8 +52,8 @@ services:
 
   model-info:
     image: "alpt96/mltestingwebframework:model_information"
-    # volumes:
-    #   - "./services/model_information:/usr/src/ml-framework"
+    volumes:
+      - model-info-service:/usr/src/ml-framework
     ports:
       - "5004:5000"
     environment:
@@ -72,8 +72,8 @@ services:
 
   data-provider:
     image: "alpt96/mltestingwebframework:data_provider"
-    # volumes:
-    #   - "./services/data_provider:/usr/src/ml-framework"
+    volumes:
+      - data-provider-service:/usr/src/ml-framework
     ports:
       - "5006:5000"
     environment:
@@ -92,8 +92,8 @@ services:
 
   ai-master:
     image: "alpt96/mltestingwebframework:ai_master"
-    # volumes:
-    #   - "./services/ai_master:/usr/src/ml-framework"
+    volumes:
+      - ai-master-service:/usr/src/ml-framework
     ports:
       - "5007:5000"
     environment:
@@ -112,8 +112,8 @@ services:
 
   ai-slave:
     image: "alpt96/mltestingwebframework:ai_slave"
-    # volumes:
-    #   - "./services/ai_slave:/usr/src/ml-framework"
+    volumes:
+      - ai-slave-service:/usr/src/ml-framework
     ports:
       - "5005:5000"
     environment:
@@ -125,15 +125,15 @@ services:
       - LANG=en_US.utf-8
     deploy:
       placement:
-        constraints: [node.hostname == raspberrypi]
+        constraints: [node.hostname == alp-salon]
     depends_on:
       - ai-master
       - rabbitmq-broker
 
   login:
     image: "alpt96/mltestingwebframework:login"
-    # volumes:
-    #   - './services/register:/usr/src/ml-framework'
+    volumes:
+      - login-service:/usr/src/ml-framework
     ports:
       - "5001:5001"
     environment:
@@ -152,8 +152,8 @@ services:
 
   views:
     image: "alpt96/mltestingwebframework:views"
-    # volumes:
-    #   - './services/register:/usr/src/ml-framework'
+    volumes:
+      - views-service:/usr/src/ml-framework
     ports:
       - "3001:3000"
     environment:
@@ -166,6 +166,8 @@ services:
 
   api:
     image: "alpt96/mltestingwebframework:api"
+    volumes:
+      - api-service:/usr/src/ml-framework
     ports:
       - "5002:5000"
     environment:
@@ -220,3 +222,14 @@ services:
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
+
+volumes:
+  register-service:
+  model-deployment-service:
+  model-info-service:
+  data-provider-service:
+  ai-master-service:
+  ai-slave-service:
+  login-service:
+  views-service:
+  api-service:

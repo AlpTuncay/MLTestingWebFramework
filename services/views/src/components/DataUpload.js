@@ -39,7 +39,7 @@ class DataUpload extends React.Component {
                 {data: {model_id: this.props.model_id, data_file: formData.get("data_file"), filename: this.state.filename}},
                 {headers: {"x-access-token": localStorage.getItem("x-access-token")}}
     ).then(response => {
-
+      this.getAvailableDataForModel()
     }).catch(error => {
 
     })

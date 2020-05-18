@@ -9,8 +9,9 @@ RUN apt-get update \
 ENV LANG en_US.UTF-8
 ENV LC_ALL en_US.UTF-8
 
-RUN apt-get install -y python3.7-dev \
-    && apt-get install -y python3-pip
+RUN apt-get install -y python3.6-dev \
+    && apt-get install -y python3-pip \
+    && python3 -m pip install pip --upgrade
 
 RUN apt-get install -y \
         netcat \
@@ -45,7 +46,7 @@ RUN pip3 --no-cache-dir install \
 
 RUN pip3 install opencv-python
 
-RUN pip3 install --no-cache-dir tensorflow keras
+RUN pip3 install --no-cache-dir tensorflow==1.15 keras
 
 COPY ./entrypoint.sh /usr/src/ml-framework/entrypoint.sh
 RUN chmod +x /usr/src/ml-framework/entrypoint.sh

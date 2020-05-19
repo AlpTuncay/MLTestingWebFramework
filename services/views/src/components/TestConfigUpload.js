@@ -4,7 +4,7 @@ import { Redirect } from "react-router-dom";
 const axios = require("axios").default;
 
 
-class CreateModelTestConfig extends React.Component {
+class TestConfigUpload extends React.Component {
 
   constructor(props){
     super(props);
@@ -95,4 +95,4 @@ class CreateModelTestConfig extends React.Component {
 
 }
 
-export default CreateModelTestConfig;
+export default TestConfigUpload;

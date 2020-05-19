@@ -320,3 +320,23 @@ def run_model_test(current_user, model_id):
         }
 
         return jsonify(response), response["status"]
+
+
+@views_blueprint.route("/graph/<model_id>", methods=["GET"])
+@cross_origin()
+@token_required
+def get_test_graph_data_for_model(current_user, model_id):
+
+    try:
+        r = requests.get(f"http://model-info:5000/graph/{model_id}").json()
+
+        logging.error(r)
+
+        return jsonify(r), r["status"]
+    except requests.exceptions.ConnectionError as e:
+        response = {
+            "status": 500,
+            "message": f"Connection error. {e}"
+        }
+
+        return jsonify(response), response["status"]

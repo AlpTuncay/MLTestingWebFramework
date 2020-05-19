@@ -13,18 +13,17 @@ import json
 def parse_json_config(json):
     pass
 
-def run_keras(config, test_path, received):
-    import keras
+def run_keras(config, test_path, received, start_time):
     from keras.models import load_model
-    from keras.preprocessing.image import ImageDataGenerator
 
     model = load_model(test_path + "/" + received["model_config_filename"])
 
     if config["data_type"] == "image":
+        from keras.preprocessing.image import ImageDataGenerator
+
         img_data_gen_args = config["image_data_generator_args"]
         flow_from_dir_args = config["flow_from_directory_args"]
 
-        start_time = time.time()
         try:
 
             rescale_to_float = img_data_gen_args["rescale"].split("/")
@@ -57,7 +56,6 @@ def run_keras(config, test_path, received):
     elif config["data_type"] == "csv":
         import numpy as np
 
-        start_time = time.time()
         try:
             if config["data_structure"] == "single":
 
@@ -91,13 +89,12 @@ def run_keras(config, test_path, received):
 
     return response
 
-def run_sklearn(config, test_path, received):
+def run_sklearn(config, test_path, received, start_time):
     from joblib import load
     import importlib
     from sklearn.metrics import log_loss
     import numpy as np
 
-    start_time = time.time()
     try:
         model = load(test_path + "/" + received["model_config_filename"])
         scoring_module = importlib.import_module("sklearn.metrics")
@@ -179,15 +176,23 @@ if __name__ == '__main__':
         f.close()
 
         # RUN THE TESTS HERE AND DELETE THE DATA AND THE MODEL CONFIG FILES
-        if received["framework"] == "Keras":
-            response = run_keras(config, test_path, received)
-        elif received["framework"] == "Sklearn":
-            response = run_sklearn(config, test_path, received)
-        elif received["framework"] == "Tensorflow":
-            pass
-
-        elif received["framework"] == "PyTorch":
-            pass
+        start_time = time.time()
+        try:
+            if received["framework"] == "Keras":
+                response = run_keras(config, test_path, received, start_time)
+            elif received["framework"] == "Sklearn":
+                response = run_sklearn(config, test_path, received, start_time)
+            elif received["framework"] == "Tensorflow":
+                pass
+            elif received["framework"] == "PyTorch":
+                pass
+        except Exception as e:
+            response = {
+                "model_id": received["model_id"],
+                "test_time": start_time,
+                "reason": str(e),
+                "test_status": "Fail"
+            }
 
         response_producer = producer.Producer()
 

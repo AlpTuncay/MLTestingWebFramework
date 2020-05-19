@@ -1,7 +1,8 @@
 import React from "react";
 import { Redirect } from "react-router-dom";
 import DataUpload from "./DataUpload";
-import CreateModelTestConfig from "./CreateModelTestConfig";
+import TestConfigUpload from "./TestConfigUpload";
+import TestGraph from "./TestGraph";
 
 const axios = require("axios").default;
 
@@ -72,7 +73,10 @@ class ModelTest extends React.Component {
           </div>
         </div>
         <div className="row">
-          <CreateModelTestConfig model_id={this.props.match.params.id}/>
+          <TestGraph model_id={this.props.match.params.id}/>
+        </div>
+        <div className="row">
+          <TestConfigUpload model_id={this.props.match.params.id}/>
           <DataUpload model_id={this.props.match.params.id}/>
           <br />
         </div>

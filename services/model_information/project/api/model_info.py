@@ -121,6 +121,68 @@ def get_latest_model_state(model_id):
         return jsonify(response), response["status"]
 
 
+@model_info_blueprint.route("/graph/<model_id>")
+def get_graph_data_for_model(model_id):
+    try:
+        model_state_result = ModelState.query.filter_by(model_id=model_id).all()
+
+        if not model_state_result:
+            response = {
+                "status": 404,
+                "message": "No model state found at this moment."
+            }
+
+            return jsonify(response), response["status"]
+        else:
+            model_states = [state.to_json() for state in model_state_result]
+
+            category = []
+
+            acc_stats = []
+            loss_stats = []
+
+            for model_state in model_states:
+                category.append({
+                    "label": model_state["last_test_time"]
+                })
+
+                acc_stats.append({
+                    "value": model_state["test_acc"]
+                })
+
+                loss_stats.append({
+                    "value": model_state["test_loss"]
+                })
+
+            dataset = [
+                {
+                    "seriesname": "Accuracy",
+                    "data": acc_stats
+                },
+                {
+                    "seriesname": "Loss",
+                    "data": loss_stats
+                }
+            ]
+
+            response = {
+                "status": 200,
+                "graph_data": {
+                    "category": category,
+                    "dataset": dataset
+                }
+            }
+
+            return jsonify(response), response["status"]
+
+    except Exception as e:
+        response = {
+            "status": 500,
+            "message": f"Error occurred {e}"
+        }
+
+        return jsonify(response), response["status"]
+
 @model_info_blueprint.route("/", methods=["GET"])
 def get_model_state_by_date():
     pass

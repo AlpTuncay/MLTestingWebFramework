@@ -32,11 +32,25 @@ class TestGraph extends React.Component {
           categories: [{
             category: response.data.graph_data.category
           }],
-          dataset: response.data.graph_data.dataset
+          dataset: response.data.graph_data.dataset_results
+      };
+
+      const runTimeStats = {
+          chart: {
+            caption: "Runtime Statistics of the Model",
+            showhovereffect: "1",
+            drawcrossline: "1",
+            showLegend: "1"
+          },
+          categories: [{
+            category: response.data.graph_data.category
+          }],
+          dataset: response.data.graph_data.dataset_runtime
       };
 
       this.setState({
-        data_source: dataSource
+        test_result: dataSource,
+        runtime_stats: runTimeStats
       })
 
     }).catch(error => {
@@ -58,7 +72,15 @@ class TestGraph extends React.Component {
                 type="msline"
                 width="100%"
                 dataFormat="JSON"
-                dataSource={this.state.data_source}
+                dataSource={this.state.test_result}
+              />
+          </div>
+          <div className="card">
+              <ReactFusioncharts
+                type="msline"
+                width="100%"
+                dataFormat="JSON"
+                dataSource={this.state.runtime_stats}
               />
           </div>
       </div>

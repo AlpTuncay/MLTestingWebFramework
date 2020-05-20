@@ -140,6 +140,7 @@ def get_graph_data_for_model(model_id):
 
             acc_stats = []
             loss_stats = []
+            runtime_stats = []
 
             for model_state in model_states:
                 category.append({
@@ -153,8 +154,11 @@ def get_graph_data_for_model(model_id):
                 loss_stats.append({
                     "value": model_state["test_loss"]
                 })
+                runtime_stats.append({
+                    "value": model_state["test_duration"]
+                })
 
-            dataset = [
+            dataset_results = [
                 {
                     "seriesname": "Accuracy",
                     "data": acc_stats
@@ -165,11 +169,19 @@ def get_graph_data_for_model(model_id):
                 }
             ]
 
+            dataset_runtime = [
+                {
+                    "seriesname": "Duration",
+                    "data": runtime_stats
+                }
+            ]
+
             response = {
                 "status": 200,
                 "graph_data": {
                     "category": category,
-                    "dataset": dataset
+                    "dataset_results": dataset_results,
+                    "dataset_runtime": dataset_runtime
                 }
             }
 

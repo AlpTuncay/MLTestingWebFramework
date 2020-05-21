@@ -5,6 +5,7 @@ from project.api.models import ModelDefinition
 from werkzeug.utils import secure_filename
 import os
 from base64 import b64encode, b64decode
+import shutil
 import logging
 
 model_blueprint = Blueprint("models", __name__)
@@ -32,12 +33,12 @@ def deploy_model():
         if not os.path.exists(path_to_model):
             os.makedirs(path_to_model)
 
-        with open(path_to_model + f"/{filename}", "wb+") as f:
+        with open(f"{path_to_model}/{filename}", "wb+") as f:
             f.write(data)
 
         # model_file.save(path_to_model)
 
-        model_definition.path_to_model = path_to_model + f"/{filename}"
+        model_definition.path_to_model = f"{path_to_model}/{filename}"
         database.session.commit()
 
         response = {
@@ -60,6 +61,45 @@ def deploy_model():
     # IDEA -> First store model information, such as title, deployed_by and framework,
     # and then create the file path for the model_file to be saved.
     # Structure for folder path -> /users/<id>/models/<framework>/<model_id>/<model_file>
+
+@model_blueprint.route("/models/<model_id>", methods=["POST"])
+def update_model(model_id):
+    model_definition = ModelDefinition.query.filter_by(id=model_id).first()
+
+    model_file = request.json["files"]
+    filename = request.json["filename"]
+
+    try:
+        header, encoded = model_file.split(",", 1)
+        data = b64decode(encoded)
+
+        path_to_model = f"./user/{model_definition.deployed_by}/models/{model_id}/{model_definition.model_framework}"
+
+        os.remove(model_definition.path_to_model)
+
+        with open(f"{path_to_model}/{filename}", "wb+") as f:
+            f.write(data)
+
+        model_definition.path_to_model = f"{path_to_model}/{filename}"
+
+        database.session.commit()
+
+        response = {
+            "status": 201,
+            "message": f"Updated model successfully. Model: {model_definition.model_title}"
+        }
+
+        return jsonify(response), response["status"]
+
+    except exc.IntegrityError:
+        database.session.rollback()
+
+        response = {
+            "status": 500,
+            "message": f"Error occurred while updating model {model_definition.model_title}"
+        }
+
+        return jsonify(response), response["status"]
 
 
 @model_blueprint.route("/models/all", methods=["GET"])
@@ -129,7 +169,7 @@ def send_model_config(model_id):
         with open(model.path_to_model, "rb") as f:
             encoded = b64encode(f.read())
         f.close()
-        
+
         response = {
             "config": encoded.decode(),
             "framework": model.model_framework,

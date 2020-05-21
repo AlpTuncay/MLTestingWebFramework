@@ -66,7 +66,6 @@ class TestGraph extends React.Component {
 
     return (
       <div className="col-md-12">
-          <br />
           <div className="card">
               <ReactFusioncharts
                 type="msline"

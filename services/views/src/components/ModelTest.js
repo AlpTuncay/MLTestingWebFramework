@@ -3,6 +3,7 @@ import { Redirect } from "react-router-dom";
 import DataUpload from "./DataUpload";
 import TestConfigUpload from "./TestConfigUpload";
 import TestGraph from "./TestGraph";
+import UpdateModel from "./UpdateModel";
 
 const axios = require("axios").default;
 
@@ -59,21 +60,11 @@ class ModelTest extends React.Component {
     }
     return (
       <div>
-        <div className="row d-flex justify-content-center">
-          <div className="col-md-12">
-            <div className="card">
-              <div className="card-body">
-                <h3>
-                  Get the model specific configuration here. In Keras, if user
-                  defined their custom loss function, it should be specified here.
-                  Look for these kinds of situations with Tensorflow, PyTorch and Sklearn.
-                </h3>
-              </div>
-            </div>
-          </div>
-        </div>
         <div className="row">
           <TestGraph model_id={this.props.match.params.id}/>
+        </div>
+        <div className="row">
+          <UpdateModel model_id={this.props.match.params.id}/>
         </div>
         <div className="row">
           <TestConfigUpload model_id={this.props.match.params.id}/>

@@ -169,6 +169,27 @@ def deploy_model(current_user):
         return jsonify(response), response["status"]
 
 
+@views_blueprint.route("/model/update/<model_id>", methods=["POST"])
+@cross_origin()
+@token_required
+def update_model(current_user, model_id):
+    model_file = request.json["files"]
+    filename = request.json["filename"]
+
+    try:
+        r = requests.post(f"http://models:5000/models/{model_id}", json={"files": model_file, "filename": filename})
+        response = r.json()
+
+        return jsonify(response), response["status"]
+    except requests.exceptions.ConnectionError as e:
+        response = {
+            "status": 500,
+            "message": f"Connection error. {e}"
+        }
+
+        return jsonify(response), response["status"]
+
+
 @views_blueprint.route("/models/<model_id>", methods=["GET"])
 @cross_origin()
 @token_required

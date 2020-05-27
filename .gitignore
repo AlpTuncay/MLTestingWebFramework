@@ -6,3 +6,7 @@
 *.model
 *.zip
 *.png
+*/user/*
+*/model/*
+*/test/model/*
+*/config/*

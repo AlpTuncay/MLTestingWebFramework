@@ -196,7 +196,7 @@ if __name__ == '__main__':
         with open("%s/%s" % (test_path, received["config_filename"]), "r") as f:
             config = json.loads(f.read())
         f.close()
-        logging.error(config["custom_objects"])
+
         # RUN THE TESTS HERE AND DELETE THE DATA AND THE MODEL CONFIG FILES
         start_time = time.time()
         try:

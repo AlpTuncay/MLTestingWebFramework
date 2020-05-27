@@ -14,9 +14,24 @@ def parse_json_config(json):
     pass
 
 def run_keras(config, test_path, received, start_time):
+    import importlib.util
     from keras.models import load_model
 
-    model = load_model(test_path + "/" + received["model_config_filename"])
+    if "custom_objects_file" in received:
+        custom_objects_file_path = test_path + "/" + received["custom_objects_filename"]
+
+        spec = importlib.util.spec_from_file_location(os.path.splitext(received["custom_objects_filename"])[0], custom_objects_file_path)
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+
+        for key in config["custom_objects"]:
+            config["custom_objects"][key] = eval("%s.%s" % ("module", config["custom_objects"][key]))
+
+        custom_objects = config["custom_objects"]
+    else:
+        custom_objects = None
+
+    model = load_model(test_path + "/" + received["model_config_filename"], custom_objects=custom_objects)
 
     if config["data_type"] == "image":
         from keras.preprocessing.image import ImageDataGenerator
@@ -155,6 +170,13 @@ if __name__ == '__main__':
             f.write(model_config_data)
         f.close()
 
+        if "custom_objects_file" in received:
+            custom_objects_file = b64decode(received["custom_objects_file"])
+
+            with open("%s/%s" % (test_path, received["custom_objects_filename"]), "wb+") as f:
+                f.write(custom_objects_file)
+            f.close()
+
         # test_data_header, test_data_encoded = received["test_data"].split(",", 1)
         test_data = b64decode(received["test_data"])
 
@@ -172,9 +194,9 @@ if __name__ == '__main__':
         f.close()
 
         with open("%s/%s" % (test_path, received["config_filename"]), "r") as f:
-            config = json.load(f)
+            config = json.loads(f.read())
         f.close()
-
+        logging.error(config["custom_objects"])
         # RUN THE TESTS HERE AND DELETE THE DATA AND THE MODEL CONFIG FILES
         start_time = time.time()
         try:

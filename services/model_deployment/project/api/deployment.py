@@ -16,10 +16,12 @@ def deploy_model():
     model_title = request.json["data"]["model_title"]
     deployed_by = request.json["data"]["deployed_by"]
     model_framework = request.json["data"]["model_framework"]
-    model_file = request.json["files"]
+    model_file = request.json["files"]["model_file"]
+    custom_objects_file = request.json["files"]["custom_objects_file"] if "custom_objects_file" in request.json["files"] else None
     filename = request.json["filename"]
+    custom_objects_filename = request.json["custom_objects_filename"] if "custom_objects_filename" in request.json else None
 
-    model_definition = ModelDefinition(model_title=model_title, deployed_by=deployed_by, model_framework=model_framework, path_to_model="")
+    model_definition = ModelDefinition(model_title=model_title, deployed_by=deployed_by, model_framework=model_framework, path_to_model="", path_to_custom_objects="")
 
     try:
         database.session.add(model_definition)
@@ -36,9 +38,17 @@ def deploy_model():
         with open(f"{path_to_model}/{filename}", "wb+") as f:
             f.write(data)
 
-        # model_file.save(path_to_model)
+        if custom_objects_file:
+            header, encoded = custom_objects_file.split(",", 1)
+            data = b64decode(encoded)
+
+            with open(f"{path_to_model}/{custom_objects_filename}", "wb+") as f:
+                f.write(data)
+
+            model_definition.path_to_custom_objects = f"{path_to_model}/{custom_objects_filename}"
 
         model_definition.path_to_model = f"{path_to_model}/{filename}"
+
         database.session.commit()
 
         response = {
@@ -66,7 +76,7 @@ def deploy_model():
 def update_model(model_id):
     model_definition = ModelDefinition.query.filter_by(id=model_id).first()
 
-    model_file = request.json["files"]
+    model_file = request.json["files"]["model_file"]
     filename = request.json["filename"]
 
     try:
@@ -164,19 +174,26 @@ def send_model_config(model_id):
     model = ModelDefinition.query.filter_by(id=model_id).first()
 
     if model:
-        # logging.error(model.to_json())
 
         with open(model.path_to_model, "rb") as f:
-            encoded = b64encode(f.read())
+            encoded_model = b64encode(f.read())
         f.close()
 
         response = {
-            "config": encoded.decode(),
+            "config": encoded_model.decode(),
             "framework": model.model_framework,
             "filename": model.to_json()["filename"],
             "status": 200
         }
 
+        if model.path_to_custom_objects:
+            with open(model.path_to_custom_objects, "rb") as f:
+                encoded_custom_objects = b64encode(f.read())
+            f.close()
+
+            response["custom_objects_file"] = encoded_custom_objects.decode()
+            response["custom_objects_filename"] = model.to_json()["custom_objects_filename"]
+        
         return jsonify(response), response["status"]
     else:
         response = {

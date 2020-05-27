@@ -141,8 +141,10 @@ def deploy_model(current_user):
     # TODO Fix file upload issue
     model_title = request.json["data"]["model_title"]
     model_framework = request.json["data"]["model_framework"]
-    model_file = request.json["files"]
+    model_file = request.json["files"]["model_file"]
+    custom_objects_file = request.json["files"]["custom_objects_file"] if "custom_objects_file" in request.json["files"] else None
     filename = request.json["filename"]
+    custom_objects_filename = request.json["custom_objects_filename"] if "custom_objects_filename" in request.json else None
     deployed_by = current_user["data"]["id"]
 
     # filepath = f"/users/{deployed_by}/models/{secure_filename(model_file.filename)}"
@@ -153,7 +155,8 @@ def deploy_model(current_user):
         # model_file = open(filepath)
         r = requests.post("http://models:5000/models", json={"data": {"model_title": model_title,
                                                                       "model_framework": model_framework,
-                                                                      "deployed_by": deployed_by}, "files": model_file, "filename": filename})
+                                                                      "deployed_by": deployed_by}, "files":{"model_file": model_file, "custom_objects_file": custom_objects_file},
+                                                                      "filename": filename, "custom_objects_filename": custom_objects_filename})
         response = r.json()
 
         # if response["status"] == 201:

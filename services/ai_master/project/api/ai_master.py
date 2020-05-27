@@ -53,6 +53,10 @@ def create_model_test_request(model_id):
             "config_filename": config_file
         }
 
+        if "custom_objects_file" in model_config_response:
+            test_request_object["custom_objects_file"] = model_config_response["custom_objects_file"]
+            test_request_object["custom_objects_filename"] = model_config_response["custom_objects_filename"]
+
         request_producer.produce(json.dumps(test_request_object))
 
         response = {

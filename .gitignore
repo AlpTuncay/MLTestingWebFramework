@@ -6,7 +6,7 @@
 *.model
 *.zip
 *.png
-*/user/*
+model_deployment/user/*
 */model/*
 */test/model/*
 */config/*

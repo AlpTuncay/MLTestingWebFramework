@@ -13,9 +13,9 @@ class Home extends React.Component {
                         </div>
                         <div className="panel-body">
                             <ol>
-                                <li>Deploy your model by providing the JSON definition.</li>
+                                <li>Deploy your model, right now supports Keras and Sklearn.</li>
                                 <li>Choose which hardware you wish to test your model.</li>
-                                <li>Start training and testing.</li>
+                                <li>Run your tests.</li>
                             </ol>
                         </div>
                     </div>

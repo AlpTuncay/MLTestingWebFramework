@@ -44,7 +44,7 @@ class ModelObject extends React.Component {
       if(Boolean(this.state.model_state)){
         return (
           <div id="test">
-            <p>Accuracy: {this.state.model_state.test_acc}</p>
+            <p>Score: {this.state.model_state.test_acc}</p>
             <p>Loss: {this.state.model_state.test_loss}</p>
             <p>Duration: {this.state.model_state.test_duration}</p>
             <p>Time of test: {this.state.model_state.last_test_time}</p>
@@ -54,7 +54,7 @@ class ModelObject extends React.Component {
       } else {
         return (
           <div id="test">
-            <p>Accuracy: N/A</p>
+            <p>Score: N/A</p>
             <p>Loss: N/A</p>
             <p>Duration: N/A</p>
             <p>Time of test: N/A</p>

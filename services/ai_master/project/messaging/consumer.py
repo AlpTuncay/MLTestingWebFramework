@@ -33,7 +33,9 @@ class Consumer:
         test_acc = received["accuracy"] if test_status == "Success" else 0.0
         test_loss = received["loss"] if test_status == "Success" else 0.0
         test_duration = received["duration"] if test_status == "Success" else 0.0
+        reason = received["reason"] if test_status == "Fail" else None
         last_test_time = received["test_time"]
+        requester_id = received["requester_id"]
 
         requests.post("http://model-info:5000/model_info", json={"data":{
                                                                         "model_id": model_id,
@@ -43,3 +45,16 @@ class Consumer:
                                                                         "test_duration": test_duration,
                                                                         "test_status": test_status
                                                                     }})
+        try:
+            requests.post("http://mailer:5000/send", json={"data":{
+                                                                    "requester_id": requester_id,
+                                                                    "model_id": model_id,
+                                                                    "test_acc": test_acc,
+                                                                    "test_loss": test_loss,
+                                                                    "last_test_time": last_test_time,
+                                                                    "test_duration": test_duration,
+                                                                    "test_status": test_status,
+                                                                    "reason": reason
+                                                                }})
+        except Exception as e:
+            raise e

@@ -325,14 +325,10 @@ def get_available_data_for_model(current_user, model_id):
 @cross_origin()
 @token_required
 def run_model_test(current_user, model_id):
-    # Send request to AI service with model_id
-    # AI service will fetch the model with the model_id, data corresponding to the model and initialize the model
-    # AI service needs preprocess_data function
     try:
-
-        # TODO -> Instead of HTTP request to AI service, publish test request on a queue  and then return proper response to the user.
-
-        r = requests.get(f"http://ai-master:5000/test/{model_id}").json()
+        user_id = current_user["data"]["id"]
+        logging.error(user_id)
+        r = requests.post(f"http://ai-master:5000/test/{model_id}", json={"data": {"user_id": user_id}}).json()
 
         logging.error(r)
 

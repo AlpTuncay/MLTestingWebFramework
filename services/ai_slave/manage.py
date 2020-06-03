@@ -216,6 +216,8 @@ if __name__ == '__main__':
                 "test_status": "Fail"
             }
 
+        response["requester_id"] = received["requester_id"]
+
         response_producer = producer.Producer()
 
         response_producer.produce(json.dumps(response))

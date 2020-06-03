@@ -173,6 +173,24 @@ services:
       - ai-master
       - rabbitmq-broker
 
+  mailer:
+    build:
+      context: services/mailer
+      dockerfile: Dockerfile
+    volumes:
+      - "./services/mailer:/usr/src/ml-framework"
+    ports:
+      - "5008:5000"
+    environment:
+      - FLASK_ENV=development
+      - APP_SETTINGS=project.config.DevelopmentConfig
+      - RABBITMQ_USERNAME=guest
+      - RABBITMQ_PASSWORD=guest
+    depends_on:
+      - users-db
+      - models-db
+
+
   users-db:
     build:
       context: ./services/register/project/db

@@ -15,12 +15,14 @@ response_consumer = consumer.Consumer()
 
 threading.Thread(target=response_consumer.consume).start()
 
-@ai_master_blueprint.route("/test/<model_id>", methods=["GET"])
+@ai_master_blueprint.route("/test/<model_id>", methods=["POST"])
 def create_model_test_request(model_id):
     # Here, service would receive an HTTP request that contains necessary
     # information for testing. Then, it will configure that request into a
     # format that would be passed in a message queue.
     request_producer = producer.Producer()
+
+    requester_id = request.json["data"]["user_id"]
 
     try:
         model_config_response = requests.get(f"http://models:5000/models/config/{model_id}").json()
@@ -50,7 +52,8 @@ def create_model_test_request(model_id):
             "test_data": data_provider_response["data_file"],
             "test_data_filename": data_provider_response["filename"],
             "config_file": encoded.decode(),
-            "config_filename": config_file
+            "config_filename": config_file,
+            "requester_id": requester_id
         }
 
         if "custom_objects_file" in model_config_response:

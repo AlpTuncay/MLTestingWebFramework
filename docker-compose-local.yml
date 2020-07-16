@@ -160,6 +160,7 @@ services:
       dockerfile: Dockerfile
     volumes:
       - "./services/ai_slave:/usr/src/ml-framework"
+      - "/etc:/usr/etc"
     ports:
       - "5005:5000"
     environment:

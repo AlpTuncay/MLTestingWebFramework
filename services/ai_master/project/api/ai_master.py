@@ -8,6 +8,8 @@ import os
 from project.messaging import producer, consumer
 import threading
 import json
+from pyrabbit.api import Client
+
 
 ai_master_blueprint = Blueprint("ai", __name__)
 
@@ -23,6 +25,7 @@ def create_model_test_request(model_id):
     request_producer = producer.Producer()
 
     requester_id = request.json["data"]["user_id"]
+    device = request.json["data"]["device"]
 
     try:
         model_config_response = requests.get(f"http://models:5000/models/config/{model_id}").json()
@@ -60,7 +63,8 @@ def create_model_test_request(model_id):
             test_request_object["custom_objects_file"] = model_config_response["custom_objects_file"]
             test_request_object["custom_objects_filename"] = model_config_response["custom_objects_filename"]
 
-        request_producer.produce(json.dumps(test_request_object))
+        request_queue = "/test/request/{}".format(device)
+        request_producer.produce(json.dumps(test_request_object), request_queue)
 
         response = {
             "message": "Test request queued.",
@@ -124,8 +128,15 @@ def provide_test_config(model_id):
             return jsonify(response), response["status"]
 
 
-@ai_master_blueprint.route("/test/devices", methods=["GET"])
+@ai_master_blueprint.route("/devices", methods=["GET"])
 def get_testing_devices():
     # This is the end-point which would get information of the connected test devices
     # and then publish them to users.
-    pass
+    cl = Client("rabbitmq-broker:15672", "admin", "admin")
+
+    response = {
+        "status": 200,
+        "queues": [q["name"].split("/")[-1] for q in cl.get_queues() if "request" in q["name"]]
+    }
+
+    return jsonify(response), response["status"]

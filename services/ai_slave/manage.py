@@ -8,10 +8,9 @@ import zipfile
 import time
 from datetime import datetime
 import json
-
-
-def parse_json_config(json):
-    pass
+import psutil
+import platform
+import socket
 
 def run_keras(config, test_path, received, start_time):
     import importlib.util
@@ -223,7 +222,6 @@ if __name__ == '__main__':
         response_producer.produce(json.dumps(response))
 
         shutil.rmtree("./test/model/%s" % received["model_id"])
-
 
     request_consumer = consumer.Consumer(callback=on_msg_receive)
 

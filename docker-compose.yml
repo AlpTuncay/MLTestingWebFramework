@@ -150,6 +150,24 @@ services:
       - users-db
       - api
 
+  mailer:
+    image: "alpt96/mltestingwebframework:mailer"
+    volumes:
+      - mailer-service:/usr/src/ml-framework
+    ports:
+      - "5008:5001"
+    environment:
+      - FLASK_ENV=development
+      - APP_SETTINGS=project.config.DevelopmentConfig
+      - RABBITMQ_USERNAME=guest
+      - RABBITMQ_PASSWORD=guest
+    deploy:
+      placement:
+        constraints: [node.role == manager]
+    depends_on:
+      - users-db
+      - models_db
+
   views:
     image: "alpt96/mltestingwebframework:views"
     volumes:
@@ -233,3 +251,4 @@ volumes:
   login-service:
   views-service:
   api-service:
+  mailer-service:

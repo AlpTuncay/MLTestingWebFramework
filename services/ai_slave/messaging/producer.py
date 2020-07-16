@@ -10,7 +10,7 @@ class Producer:
 
         self.channel = self.connection.channel()
 
-        self.queue = "test-response-queue"
+        self.queue = "/test/response"
 
     def produce(self, body):
         self.channel.queue_declare(queue=self.queue)

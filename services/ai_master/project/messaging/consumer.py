@@ -13,7 +13,7 @@ class Consumer:
 
         self.channel = self.connection.channel()
 
-        self.queue = "test-response-queue"
+        self.queue = "/test/response"
 
     def consume(self):
         self.channel.queue_declare(queue=self.queue)

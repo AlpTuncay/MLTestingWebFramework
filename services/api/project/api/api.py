@@ -321,14 +321,16 @@ def get_available_data_for_model(current_user, model_id):
         return jsonify(response), response["status"]
 
 
-@views_blueprint.route("/model/<model_id>/test", methods=["GET"])
+@views_blueprint.route("/model/<model_id>/test", methods=["POST"])
 @cross_origin()
 @token_required
 def run_model_test(current_user, model_id):
     try:
         user_id = current_user["data"]["id"]
+        device = request.json["data"]["device"]
+
         logging.error(user_id)
-        r = requests.post(f"http://ai-master:5000/test/{model_id}", json={"data": {"user_id": user_id}}).json()
+        r = requests.post(f"http://ai-master:5000/test/{model_id}", json={"data": {"user_id": user_id, "device": device}}).json()
 
         logging.error(r)
 
@@ -349,6 +351,27 @@ def get_test_graph_data_for_model(current_user, model_id):
 
     try:
         r = requests.get(f"http://model-info:5000/graph/{model_id}").json()
+
+        logging.error(r)
+
+        return jsonify(r), r["status"]
+    except requests.exceptions.ConnectionError as e:
+        response = {
+            "status": 500,
+            "message": f"Connection error. {e}"
+        }
+
+        return jsonify(response), response["status"]
+
+@views_blueprint.route("/devices", methods=["GET"])
+@cross_origin()
+@token_required
+def get_device_information(current_user):
+    # Send request to AI Master
+    try:
+        user_id = current_user["data"]["id"]
+        logging.error(user_id)
+        r = requests.get(f"http://ai-master:5000/devices").json()
 
         logging.error(r)
 

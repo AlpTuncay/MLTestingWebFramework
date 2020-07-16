@@ -4,6 +4,7 @@ import DataUpload from "./DataUpload";
 import TestConfigUpload from "./TestConfigUpload";
 import TestGraph from "./TestGraph";
 import UpdateModel from "./UpdateModel";
+import DeviceInfo from "./DeviceInfo";
 
 const axios = require("axios").default;
 
@@ -15,6 +16,7 @@ class ModelTest extends React.Component {
       model_title: "",
       path_to_model: "",
       model_framework: "",
+      device: "",
       redirect: false,
       url: "/"
     }
@@ -36,7 +38,8 @@ class ModelTest extends React.Component {
   }
 
   sendModelTestRequest = () => {
-    axios.get(`http://127.0.0.1:5002/model/${this.props.match.params.id}/test`,
+    axios.post(`http://127.0.0.1:5002/model/${this.props.match.params.id}/test`,
+              {data: {"device": this.state.device}},
               {headers: {"x-access-token": window.localStorage.getItem("x-access-token")}}
     ).then(response => {
       console.log(response)
@@ -45,6 +48,12 @@ class ModelTest extends React.Component {
       })
     }).catch(error => {
       console.error(error)
+    })
+  }
+
+  deviceCallback = (chosenDevice) => {
+    this.setState({
+      device: chosenDevice
     })
   }
 
@@ -69,7 +78,9 @@ class ModelTest extends React.Component {
         <div className="row">
           <TestConfigUpload model_id={this.props.match.params.id}/>
           <DataUpload model_id={this.props.match.params.id}/>
-          <br />
+        </div>
+        <div className="row">
+          <DeviceInfo parentCallback={this.deviceCallback}/>
         </div>
         <div className="row">
           <div className="col-md-12">

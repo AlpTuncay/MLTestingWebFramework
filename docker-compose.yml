@@ -114,6 +114,7 @@ services:
     image: "alpt96/mltestingwebframework:ai_slave"
     volumes:
       - ai-slave-service:/usr/src/ml-framework
+      - "/etc:/usr/etc"
     ports:
       - "5005:5000"
     environment:
@@ -124,8 +125,8 @@ services:
       - LC_ALL=en_US.utf-8
       - LANG=en_US.utf-8
     deploy:
-      placement:
-        constraints: [node.hostname == alp-salon]
+      # placement:
+      #   constraints: [node.hostname == alp-salon]
     depends_on:
       - ai-master
       - rabbitmq-broker

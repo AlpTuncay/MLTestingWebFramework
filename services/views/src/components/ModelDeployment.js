@@ -107,6 +107,7 @@ class ModelDeployment extends React.Component {
                                 <div className="form-group">
                                     <label htmlFor="model_framework" className="control-label">Model Framework</label>
                                     <select className="form-control" name="model_framework" onChange={this.formInputChangeHandler}>
+                                        <option value="none" selected disabled hidden>Select an Option</option>
                                         <option value="Keras">Keras</option>
                                         <option value="Sklearn">Sklearn</option>
                                     </select>

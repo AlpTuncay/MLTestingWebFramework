@@ -38,7 +38,7 @@ ENV LC_ALL en_US.UTF-8
 
 WORKDIR /usr/src/ml-framework
 
-COPY ./requirements.txt /usr/src/ml-framework/requirements_x86_64.txt
+COPY ./requirements_x86_64.txt /usr/src/ml-framework/requirements_x86_64.txt
 
 RUN pip3 install \
     Cython \

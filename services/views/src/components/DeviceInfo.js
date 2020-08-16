@@ -22,7 +22,19 @@ class DeviceInfo extends React.Component {
         devices: response.data.queues
       })
     }).catch(error => {
-      console.error(error);
+      // if(error.response.status === 404){
+      //   this.setState({
+      //     message: error.response.data.data.message
+      //   })
+      // } else {
+      //   this.setState({
+      //     message: error.response.data.data.message
+      //   })
+      // }
+      this.setState({
+        message: error.response.data.message
+      })
+
     })
   }
 

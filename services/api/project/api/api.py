@@ -48,6 +48,23 @@ def token_required(func):
             return jsonify(response), 401
     return decorated
 
+@views_blueprint.route("/validate", methods=["POST"])
+@cross_origin()
+def validate_token():
+    auth_token = request.json["auth_token"]
+
+    try:
+        r = requests.post("http://login:5000/validate", json={"auth_token": auth_token}).json()
+
+        return jsonify(r), r["status"]
+    except requests.exceptions.ConnectionError:
+
+        response = {
+            "status": 500,
+            "message": "Connection error occurred."
+        }
+
+        return jsonify(response), 500
 
 @views_blueprint.route("/register", methods=["POST"])
 @cross_origin()
@@ -306,7 +323,7 @@ def get_available_data_for_model(current_user, model_id):
     except requests.exceptions.ConnectionError as e:
         response = {
             "status": 500,
-            "message": f"Connection error. {e}"
+            "message": f"Connection error."
         }
 
         return jsonify(response), response["status"]

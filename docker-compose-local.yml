@@ -157,7 +157,7 @@ services:
   ai-slave:
     build:
       context: services/ai_slave
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile_x86_64
     volumes:
       - "./services/ai_slave:/usr/src/ml-framework"
       - "/etc:/usr/etc"

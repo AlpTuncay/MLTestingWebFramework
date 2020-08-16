@@ -52,7 +52,7 @@ class Register extends React.Component {
                 <div className="col-md-5">
                     <div className="card">
                         <div className="card-body">
-                            <form className="form-horizontal" content="application/json">
+                            <form className="form-horizontal" content="application/json" onSubmit={this.registerBtnOnClick}>
                                 <div className="form-group">
                                     <label htmlFor="username" className="control-label">Username:</label>
                                     <div className="col-md-12">
@@ -84,7 +84,7 @@ class Register extends React.Component {
                                     </div>
                                 </div>
                                 <div className="form-group">
-                                    <button onClick={this.registerBtnOnClick} className="btn btn-default btn-success">Register</button>
+                                    <button className="btn btn-default btn-success" type="submit">Register</button>
                                 </div>
                             </form>
                         </div>

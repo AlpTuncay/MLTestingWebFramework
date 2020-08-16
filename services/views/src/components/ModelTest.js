@@ -85,7 +85,7 @@ class ModelTest extends React.Component {
         <div className="row">
           <div className="col-md-12">
             <br />
-            <button onClick={this.sendModelTestRequest} className="btn btn-default btn-success btn-block">Test</button>
+            <button onClick={this.sendModelTestRequest} className="btn btn-default btn-success btn-block">Queue Test Request</button>
           </div>
         </div>
       </div>

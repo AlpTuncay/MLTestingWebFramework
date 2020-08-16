@@ -106,7 +106,7 @@ def provide_test_config(model_id):
             }
         else:
             existing_file = os.listdir(config_path)
-            
+
             for f in existing_file:
                 os.remove(f"{config_path}/{f}")
 
@@ -151,9 +151,17 @@ def get_testing_devices():
     # and then publish them to users.
     cl = Client("rabbitmq-broker:15672", "admin", "admin")
 
-    response = {
-        "status": 200,
-        "queues": [q["name"].split("/")[-1] for q in cl.get_queues() if "request" in q["name"]]
-    }
+    queues = [q["name"].split("/")[-1] for q in cl.get_queues() if "request" in q["name"]]
+
+    if len(queues) > 0:
+        response = {
+            "status": 200,
+            "queues": queues
+        }
+    else:
+        response = {
+            "status": 404,
+            "message": "No device is connected right now."
+        }
 
     return jsonify(response), response["status"]

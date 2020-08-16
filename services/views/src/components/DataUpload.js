@@ -72,7 +72,7 @@ class DataUpload extends React.Component {
             <br />
             <div className="card">
                 <div className="card-header">
-                  {Boolean(this.state.available_data) ? `You have uploaded data for this model: ${this.state.available_data}` : `${this.state.msg}. Please upload data.`}
+                  {Boolean(this.state.available_data) ? `You have uploaded data for this model: ${this.state.available_data}` : `${this.state.msg}.`}
                 </div>
                 <div className="card-body d-flex justify-content-center">
                     <form className="form-inline" encType="multipart/form-data">

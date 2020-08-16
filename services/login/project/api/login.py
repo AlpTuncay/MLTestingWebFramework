@@ -2,17 +2,45 @@ from flask import Blueprint, jsonify, request
 from project import database
 from werkzeug.security import check_password_hash
 from project.api.models import User
-
+from flask import current_app
+import jwt
 
 login_blueprint = Blueprint("login", __name__)
 
 
+@login_blueprint.route("/validate", methods=["POST"])
+def validate():
+    auth_token = request.json["auth_token"]
+
+    try:
+        payload = jwt.decode(auth_token, current_app.config.get("SECRET_KEY"))
+
+        response = {
+            "status": 200,
+            "message": "Valid"
+        }
+
+        return jsonify(response), response["status"]
+    except jwt.ExpiredSignatureError:
+
+        response = {
+            "status": 400,
+            "message": "Signature Expired"
+        }
+
+        return jsonify(response), response["status"]
+    except jwt.InvalidSignatureError:
+
+        response = {
+            "status": 400,
+            "message": "Invalid Expired"
+        }
+
+        return jsonify(response), response["status"]
+
 @login_blueprint.route("/login", methods=["POST"])
 def login():
     # User sends a post request, with credentials
-    # A token with a TTL, which will be added to each request user is sending, is returned to the user
-    # A database entry will be created with the user id and token so that other services can verify the user is indeed
-    # logged in
     email = request.json["data"]["email"]
     password = request.json["data"]["password"]
 

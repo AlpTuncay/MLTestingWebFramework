@@ -24,28 +24,24 @@ class App extends React.Component {
 
     // This process should be done in the backend.
     validateToken = () => {
-        let userToken = "x-access-token" in window.localStorage ? window.localStorage.getItem("x-access-token") : "";
-
-        try {
-            jwt.verify(userToken, "secret"); //Secret should be changed
-            console.log("Valid Token");
-            return true;
-        } catch (e) {
-            console.log("Invalid Token");
-            return false;
-        }
+        axios.post("http://127.0.0.1:5002/validate",
+          {auth_token: window.localStorage.getItem("x-access-token")}
+        ).then(response => {
+          this.setState({
+            userIsLoggedIn: true
+          })
+        }).catch(error => {
+          this.setState({
+            userIsLoggedIn: false
+          })
+          window.localStorage.removeItem("x-access-token")
+        })
     };
 
     componentDidMount() {
-        var loggedIn = this.validateToken();
-        this.setState({
-            userIsLoggedIn: loggedIn
-        });
+        this.validateToken();
 
-        if(!loggedIn){
-            if("x-access-token" in window.localStorage){
-              window.localStorage.removeItem("x-access-token");
-            }
+        if(!this.state.userIsLoggedIn){
             return <Redirect to={"/login"}/>
         }
     }
@@ -71,7 +67,7 @@ class App extends React.Component {
                             <li>
                                 <Link to={"/logout"} className="nav-link">Logout</Link>
                             </li>}
-                            <li className="nav-link disabled">ML Testing Framework</li>
+                            <li className="nav-link disabled">ML Testing Platform</li>
                         </ul>
                     </nav>
                     <br/>

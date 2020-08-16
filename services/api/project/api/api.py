@@ -102,14 +102,6 @@ def user_login():
         }
         return jsonify(response), 500
 
-
-@views_blueprint.route("/validate", methods=["GET"])
-@cross_origin()
-@token_required
-def validate_token(current_user):
-    pass
-
-
 @views_blueprint.route("/user/profile", methods=["GET"])
 @cross_origin()
 @token_required
@@ -117,21 +109,28 @@ def profile(current_user):
     user_information = current_user["data"]
     user_id = user_information["id"]
 
-    profile_response = {
-        "user": user_information,
-        "models": []
-    }
+    if current_user is not None:
+        profile_response = {
+            "user": user_information,
+            "models": []
+        }
 
-    try:
-        r = requests.get(f"http://models:5000/user/models/{user_id}")
-        response = r.json()
-        user_deployed_models = response["data"]
-        profile_response["models"] = user_deployed_models
-    except requests.exceptions.ConnectionError as e:
-        profile_response["models"] = "Cannot connect to server right now."
+        try:
+            r = requests.get(f"http://models:5000/user/models/{user_id}")
+            response = r.json()
+            user_deployed_models = response["data"]
+            profile_response["models"] = user_deployed_models
+        except requests.exceptions.ConnectionError as e:
+            profile_response["models"] = "Cannot connect to server right now."
 
-    return jsonify(profile_response)
+        return jsonify(profile_response)
+    else:
+        response = {
+            "status": 401,
+            "message": "Login required"
+        }
 
+        return jsonify(response), response["status"]
 
 @views_blueprint.route("/model/deploy", methods=["POST"])
 @cross_origin()
@@ -147,20 +146,12 @@ def deploy_model(current_user):
     custom_objects_filename = request.json["custom_objects_filename"] if "custom_objects_filename" in request.json else None
     deployed_by = current_user["data"]["id"]
 
-    # filepath = f"/users/{deployed_by}/models/{secure_filename(model_file.filename)}"
-
-    # model_file.save(filepath)
-
     try:
-        # model_file = open(filepath)
         r = requests.post("http://models:5000/models", json={"data": {"model_title": model_title,
                                                                       "model_framework": model_framework,
                                                                       "deployed_by": deployed_by}, "files":{"model_file": model_file, "custom_objects_file": custom_objects_file},
                                                                       "filename": filename, "custom_objects_filename": custom_objects_filename})
         response = r.json()
-
-        # if response["status"] == 201:
-        #     os.remove(filepath)
 
         return jsonify(response), response["status"]
     except requests.exceptions.ConnectionError as e:

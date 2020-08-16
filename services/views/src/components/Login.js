@@ -55,7 +55,7 @@ class Login extends React.Component{
                 <div className="col-md-5">
                     <div className="card">
                         <div className="card-body text-center">
-                            <div className="form-horizontal" id="login-form">
+                            <form className="form-horizontal" id="login-form" onSubmit={this.loginBtnOnClick}>
                                 <div className="form-group">
                                     <label htmlFor="user_email" className="control-label">Email:</label>
                                     <div className="col-md-12">
@@ -69,9 +69,9 @@ class Login extends React.Component{
                                     </div>
                                 </div>
                                 <div className="form-group">
-                                    <button className="btn btn-default btn-success" onClick={this.loginBtnOnClick}>Login</button>
+                                    <button className="btn btn-default btn-success" type="submit">Login</button>
                                 </div>
-                            </div>
+                            </form>
                         </div>
                     </div>
                     <div className="row d-flex justify-content-center">

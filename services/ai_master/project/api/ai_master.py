@@ -93,17 +93,34 @@ def provide_test_config(model_id):
         if not os.path.exists(config_path):
             os.makedirs(config_path)
 
-        header, encoded = config_file.split(",", 1)
-        data = b64decode(encoded)
+            header, encoded = config_file.split(",", 1)
+            data = b64decode(encoded)
 
-        with open(f"{config_path}/{filename}", "wb+") as f:
-            f.write(data)
+            with open(f"{config_path}/{filename}", "wb+") as f:
+                f.write(data)
 
-        response = {
-            "status": 201,
-            "message": "Config file has been saved.",
-            "filename": filename
-        }
+            response = {
+                "status": 201,
+                "message": "Config file has been saved.",
+                "filename": filename
+            }
+        else:
+            existing_file = os.listdir(config_path)
+            
+            for f in existing_file:
+                os.remove(f"{config_path}/{f}")
+
+            header, encoded = config_file.split(",", 1)
+            data = b64decode(encoded)
+
+            with open(f"{config_path}/{filename}", "wb+") as f:
+                f.write(data)
+
+            response = {
+                "status": 200,
+                "message": "Config file has been updated.",
+                "filename": filename
+            }
 
         return jsonify(response), response["status"]
     elif request.method == "GET":

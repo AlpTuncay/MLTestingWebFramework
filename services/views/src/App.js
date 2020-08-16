@@ -24,7 +24,7 @@ class App extends React.Component {
 
     // This process should be done in the backend.
     validateToken = () => {
-        let userToken = "x-access-token" in localStorage ? localStorage.getItem("x-access-token") : "";
+        let userToken = "x-access-token" in window.localStorage ? window.localStorage.getItem("x-access-token") : "";
 
         try {
             jwt.verify(userToken, "secret"); //Secret should be changed
@@ -37,11 +37,15 @@ class App extends React.Component {
     };
 
     componentDidMount() {
+        var loggedIn = this.validateToken();
         this.setState({
-            userIsLoggedIn: this.validateToken()
+            userIsLoggedIn: loggedIn
         });
 
-        if(!this.state.userIsLoggedIn){
+        if(!loggedIn){
+            if("x-access-token" in window.localStorage){
+              window.localStorage.removeItem("x-access-token");
+            }
             return <Redirect to={"/login"}/>
         }
     }

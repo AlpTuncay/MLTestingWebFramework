@@ -30,7 +30,7 @@ class Main extends React.Component {
             });
             console.log(...this.state.models)
         }).catch(error => {
-            console.log(error);
+            console.log("error");
         })
     };
 

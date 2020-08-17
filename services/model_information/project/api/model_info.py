@@ -16,12 +16,15 @@ def create_state_instance():
     last_test_time = request.json["data"]["last_test_time"]
     test_duration = request.json["data"]["test_duration"]
     test_status = request.json["data"]["test_status"]
+    test_device = request.json["data"]["test_device"]
+
+    logging.error(test_device)
 
     last_test_time = datetime.fromtimestamp(last_test_time)
 
     model_state = ModelState(model_id=model_id, test_accuracy=test_accuracy,
                             test_loss=test_loss, last_test_time=last_test_time,
-                            test_duration=test_duration, test_status=test_status)
+                            test_duration=test_duration, test_status=test_status, test_device=test_device)
 
     try:
         database.session.add(model_state)

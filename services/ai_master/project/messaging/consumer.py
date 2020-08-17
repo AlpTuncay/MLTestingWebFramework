@@ -36,6 +36,9 @@ class Consumer:
         reason = received["reason"] if test_status == "Fail" else None
         last_test_time = received["test_time"]
         requester_id = received["requester_id"]
+        test_device = received["device"]
+
+        logging.error(test_device)
 
         requests.post("http://model-info:5000/model_info", json={"data":{
                                                                         "model_id": model_id,
@@ -43,7 +46,8 @@ class Consumer:
                                                                         "test_loss": test_loss,
                                                                         "last_test_time": last_test_time,
                                                                         "test_duration": test_duration,
-                                                                        "test_status": test_status
+                                                                        "test_status": test_status,
+                                                                        "test_device": test_device
                                                                     }})
         try:
             requests.post("http://mailer:5000/send", json={"data":{
@@ -54,7 +58,8 @@ class Consumer:
                                                                     "last_test_time": last_test_time,
                                                                     "test_duration": test_duration,
                                                                     "test_status": test_status,
-                                                                    "reason": reason
+                                                                    "reason": reason,
+                                                                    "test_device": test_device
                                                                 }})
         except Exception as e:
             raise e

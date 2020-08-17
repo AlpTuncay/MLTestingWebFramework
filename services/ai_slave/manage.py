@@ -11,8 +11,9 @@ import json
 import psutil
 import platform
 import socket
+import subprocess
 
-def run_keras(config, test_path, received, start_time):
+def run_keras(config, test_path, received, start_time, device):
     import importlib.util
     from keras.models import load_model
 
@@ -56,6 +57,7 @@ def run_keras(config, test_path, received, start_time):
                 "test_time": start_time,
                 "duration": elapsed_time,
                 "model_id": received["model_id"],
+                "device": device,
                 "test_status": "Success"
             }
 
@@ -63,6 +65,7 @@ def run_keras(config, test_path, received, start_time):
             response = {
                 "model_id": received["model_id"],
                 "test_time": start_time,
+                "device": device,
                 "reason": str(e),
                 "test_status": "Fail"
             }
@@ -91,6 +94,7 @@ def run_keras(config, test_path, received, start_time):
                 "test_time": start_time,
                 "duration": elapsed_time,
                 "model_id": received["model_id"],
+                "device": device,
                 "test_status": "Success"
             }
         except Exception as e:
@@ -98,12 +102,13 @@ def run_keras(config, test_path, received, start_time):
                 "model_id": received["model_id"],
                 "test_time": start_time,
                 "reason": str(e),
+                "device": device,
                 "test_status": "Fail"
             }
 
     return response
 
-def run_sklearn(config, test_path, received, start_time):
+def run_sklearn(config, test_path, received, start_time, device):
     from joblib import load
     import importlib
     from sklearn.metrics import log_loss
@@ -139,16 +144,18 @@ def run_sklearn(config, test_path, received, start_time):
             "test_time": start_time,
             "duration": elapsed_time,
             "model_id": received["model_id"],
+            "device": device,
             "test_status": "Success"
         }
     except Exception as e:
         response = {
             "model_id": received["model_id"],
             "test_time": start_time,
+            "device": device,
             "reason": str(e),
             "test_status": "Fail"
         }
-        raise e
+        # raise e
     return response
 
 if __name__ == '__main__':
@@ -195,14 +202,16 @@ if __name__ == '__main__':
         with open("%s/%s" % (test_path, received["config_filename"]), "r") as f:
             config = json.loads(f.read())
         f.close()
-
+        host_device = subprocess.check_output(["cat", "/usr/etc/hostname"]).decode("utf-8")
+        host_device = ''.join(host_device.split())
+        logging.error(host_device)
         # RUN THE TESTS HERE AND DELETE THE DATA AND THE MODEL CONFIG FILES
         start_time = time.time()
         try:
             if received["framework"] == "Keras":
-                response = run_keras(config, test_path, received, start_time)
+                response = run_keras(config, test_path, received, start_time, host_device)
             elif received["framework"] == "Sklearn":
-                response = run_sklearn(config, test_path, received, start_time)
+                response = run_sklearn(config, test_path, received, start_time, host_device)
             elif received["framework"] == "Tensorflow":
                 pass
             elif received["framework"] == "PyTorch":
@@ -211,6 +220,7 @@ if __name__ == '__main__':
             response = {
                 "model_id": received["model_id"],
                 "test_time": start_time,
+                "device": host_device,
                 "reason": str(e),
                 "test_status": "Fail"
             }

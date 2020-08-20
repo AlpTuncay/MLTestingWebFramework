@@ -161,7 +161,7 @@ def run_sklearn(config, test_path, received, start_time, device):
 if __name__ == '__main__':
 
     def on_msg_receive(ch, method, properties, body):
-        received = json.loads(body)
+        received = json.loads(body.decode("utf-8"))
         logging.error(" [X] Received test request %s" % received["model_id"])
 
         test_path = "./test/model/%s" % received["model_id"]

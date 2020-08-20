@@ -55,9 +55,15 @@ class DataUpload extends React.Component {
           available_data: response.data.data.filename
         });
     }).catch(error => {
-      this.setState({
-        msg: error.response.data.message
-      });
+      try{
+        this.setState({
+          msg: error.response.data.message
+        });
+      } catch {
+        this.setState({
+          msg: "Error."
+        });
+      }
     })
   };
 

@@ -5,6 +5,7 @@ import TestConfigUpload from "./TestConfigUpload";
 import TestGraph from "./TestGraph";
 import UpdateModel from "./UpdateModel";
 import DeviceInfo from "./DeviceInfo";
+import UpdateCustomObjects from "./UpdateCustomObjects";
 
 const axios = require("axios").default;
 
@@ -74,6 +75,7 @@ class ModelTest extends React.Component {
         </div>
         <div className="row">
           <UpdateModel model_id={this.props.match.params.id}/>
+          <UpdateCustomObjects model_id={this.props.match.params.id}/>
         </div>
         <div className="row">
           <TestConfigUpload model_id={this.props.match.params.id}/>

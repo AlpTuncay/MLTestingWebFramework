@@ -50,6 +50,11 @@ class ModelDeployment extends React.Component {
     deployBtnOnClick = (event) => {
         event.preventDefault();
 
+        if(this.state.model_title === "" || this.state.model_framework === "" || this.state.model_file === null){
+          alert("Fields cannot be left empty")
+          return;
+        }
+
         let configFileToUpload = this.state.model_file;
         let customObjectsFileToUpload = this.state.custom_objects_file;
 
@@ -74,7 +79,7 @@ class ModelDeployment extends React.Component {
         }
 
 
-        axios.post("http://127.0.0.1:5002/model/deploy",
+        axios.post("http://127.0.0.1:5002/deploy/model",
             postData,
             {headers: {"x-access-token": localStorage.getItem("x-access-token")}}
         ).then(response => {

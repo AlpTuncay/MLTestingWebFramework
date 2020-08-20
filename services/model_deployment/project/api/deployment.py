@@ -76,7 +76,7 @@ def deploy_model():
 def update_model(model_id):
     model_definition = ModelDefinition.query.filter_by(id=model_id).first()
 
-    model_file = request.json["files"]["model_file"]
+    model_file = request.json["files"]
     filename = request.json["filename"]
 
     try:
@@ -111,6 +111,44 @@ def update_model(model_id):
 
         return jsonify(response), response["status"]
 
+@model_blueprint.route("/models/<model_id>/custom_objects", methods=["POST"])
+def update_custom_objects(model_id):
+    model_definition = ModelDefinition.query.filter_by(id=model_id).first()
+
+    custom_objects_file = request.json["files"]
+    custom_objects_filename = request.json["custom_objects_filename"]
+    try:
+        header, encoded = custom_objects_file.split(",", 1)
+        data = b64decode(encoded)
+
+        path_to_model = f"./user/{model_definition.deployed_by}/models/{model_definition.id}/{model_definition.model_framework}"
+
+        if model_definition.path_to_custom_objects:
+            os.remove(model_definition.path_to_custom_objects)
+
+        with open(f"{path_to_model}/{custom_objects_filename}", "wb+") as f:
+            f.write(data)
+
+        model_definition.path_to_custom_objects = f"{path_to_model}/{custom_objects_filename}"
+
+        database.session.commit()
+
+        response = {
+            "status": 200,
+            "message": f"Updated custom objcets successfully. Model: {model_definition.model_title}"
+        }
+
+        return jsonify(response), response["status"]
+
+    except exc.IntegrityError:
+        database.session.rollback()
+
+        response = {
+            "status": 500,
+            "message": f"Error occurred while updating custom objects {model_definition.model_title}"
+        }
+
+        return jsonify(response), response["status"]
 
 @model_blueprint.route("/models/all", methods=["GET"])
 def get_all_models():
@@ -193,7 +231,7 @@ def send_model_config(model_id):
 
             response["custom_objects_file"] = encoded_custom_objects.decode()
             response["custom_objects_filename"] = model.to_json()["custom_objects_filename"]
-        
+
         return jsonify(response), response["status"]
     else:
         response = {

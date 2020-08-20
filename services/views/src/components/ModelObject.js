@@ -46,7 +46,7 @@ class ModelObject extends React.Component {
           <div id="test">
             <p>Score: {this.state.model_state.test_acc}</p>
             <p>Loss: {this.state.model_state.test_loss}</p>
-            <p>Duration: {this.state.model_state.test_duration}</p>
+            <p>Duration: {this.state.model_state.test_duration} seconds</p>
             <p>Time of test: {this.state.model_state.last_test_time}</p>
             <p>Test Device: {this.state.model_state.test_device}</p>
             <p>Status: {this.state.model_state.test_status}</p>

@@ -71,7 +71,7 @@ class UpdateModel extends React.Component {
         }
 
         return (
-            <div className="col-md-12">
+            <div className="col-md-6">
                 <br />
                 <div className="card">
                     <div className="card-header">
@@ -80,7 +80,7 @@ class UpdateModel extends React.Component {
                     <div className="card-body d-flex justify-content-center">
                         <form className="form-inline" encType="multipart/form-data">
                             <div className="form-group">
-                                <input type="file" className="form-control-file" name="model_file" id="model_file" onChange={this.fileUploadHandler}/>
+                                <input type="file" className="form-control-file" name="model_file" id="model_file" accept=".joblib, .h5" onChange={this.fileUploadHandler}/>
                             </div>
                             <div className="form-group">
                                 <button className="btn btn-default btn-success" onClick={this.deployBtnOnClick}>Update Model</button>
@@ -89,7 +89,7 @@ class UpdateModel extends React.Component {
                     </div>
                 </div>
             </div>
-        )
+          )
     }
 }
 

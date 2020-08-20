@@ -79,7 +79,7 @@ class TestConfigUpload extends React.Component {
               <div className="card-body d-flex justify-content-center">
                   <form className="form-inline" encType="multipart/form-data">
                       <div className="form-group mb-2 mx-sm-3">
-                          <input type="file" className="form-control-file" name="data-file" id="data-file" onChange={this.fileUploadHandler}/>
+                          <input type="file" className="form-control-file" name="data-file" id="data-file" accept=".json" onChange={this.fileUploadHandler}/>
                       </div>
                       <div className="form-group">
                           <button className="btn btn-default btn-success" onClick={this.uploadConfigOnClick}>Upload Config</button>

@@ -114,11 +114,11 @@ class ModelDeployment extends React.Component {
                                 </div>
                                 <div className="form-group">
                                     <label htmlFor="model_file" className="control-label">Model Definition File</label>
-                                    <input type="file" className="form-control-file" name="model_file" id="model_file" onChange={this.modelFileUploadHandler}/>
+                                    <input type="file" className="form-control-file" name="model_file" id="model_file" accept=".joblib, .h5" onChange={this.modelFileUploadHandler}/>
                                 </div>
                                 <div className="form-group">
                                     <label htmlFor="custom_objects_file" className="control-label">If you have custom objects in your model, please provide .py file with implementations</label>
-                                    <input type="file" className="form-control-file" name="custom_objects_file" id="custom_objects_file" onChange={this.customObjectsFileUploadHandler}/>
+                                    <input type="file" className="form-control-file" name="custom_objects_file" id="custom_objects_file" accept=".py" onChange={this.customObjectsFileUploadHandler}/>
                                 </div>
                                 <div className="form-group">
                                     <button className="btn btn-default btn-success" onClick={this.deployBtnOnClick}>Deploy</button>
